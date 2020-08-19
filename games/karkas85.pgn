@@ -258,8 +258,8 @@ cd Nxd5 14. Bb5+ c6 15. Nxd5 cb 16. Qb3 O-O 17. Nxe7+ Qxe7 18. Qxb5 a6
 [Result "0-1"]                                                             
 [ECO "B44/11"]                                                             
                                                                            
-1. e4 c5 2. Kf3 e6 3. d4 cd 4. Kxd4 Kc6 5. Kb5 d6 6. c4 Kf6 7. K1c3 a6     
-8.  Ka3 d5 9. cd ed 10. ed Kb4 11. Be2 Bc5 12. O-O O-O 13. Bf3 Bf5 14.     
+1. e4 c5 2. Nf3 e6 3. d4 cd 4. Nxd4 Nc6 5. Nb5 d6 6. c4 Nf6 7. N1c3 a6
+8.  Na3 d5 9. cd ed 10. ed Nb4 11. Be2 Bc5 12. O-O O-O 13. Bf3 Bf5 14.
 Bg5 Re8 15. Qd2 b5 16. Rad1 Nd3 17. Nab1 h6 18. Bh4 b4 19. Na4 Bd6 20.     
 Bg3  Rc8  21. b3 g5 22. Bxd6 Qxd6 23. g3 Nd7 24. Bg2 Qf6 25. a3 a5 26.     
 ab  ab  27.  Qa2 Bg6 28. d6 g4 29. Qd2 Kg7 30. f3 Qxd6 31. fg Qd4+ 32.     
@@ -406,4 +406,4 @@ Qe7 38. Qc3 g5 39. Qe3 g4 40. Bd1 Qe4+ 41. Kg1 1/2
 f5  26.  gf  Nxf6 27. Rg3 Rf7 28. Bxb6 Qb8 29. Be3 Nh5 30. Rg4 Nf6 31.   
 Rh4  g5 32. fg Ng4 33. Qd2 Nxe3 34. Qxe3 Nxc2 35. Qb6 Ba8 36. Rxd6 Rb7   
 37.  Qxa6 Rxb3 38. Rxe6 Rxb2 39. Qc4 Kh8 40. e5 Qa7+ 41. Kh1 Bxg2+ 42.   
-Kxg2 Nd4+ 0:1                                                            
+Kxg2 Nd4+ 0:1
