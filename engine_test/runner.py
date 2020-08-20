@@ -19,7 +19,8 @@ class EngineRunner:
         self.__observer = observer
         self.__queue = Queue()
         for _ in range(threads):
-            thread = Thread(target=self.__thread_proc, args=[Engine(exe_name, args)])
+            thread = Thread(target=self.__thread_proc,
+                            args=[Engine(exe_name, args)])
             thread.start()
             self.__threads.append(thread)
 
@@ -77,7 +78,7 @@ class EngineRunner:
             print('No stats to display.')
             return
         sum_error = 0.0
-        greater_error = {10: 0, 20: 0, 30: 0, 40: 0, 50: 0, 75: 0, 100: 0, 
+        greater_error = {10: 0, 20: 0, 30: 0, 40: 0, 50: 0, 75: 0, 100: 0,
                          150: 0, 200: 0, 300: 0}
         for item in self.__results:
             error = item['error']

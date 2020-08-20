@@ -30,8 +30,9 @@ if __name__ == '__main__':
     if args.max_positions is not None:
         if len(p) > args.max_positions:
             p = p[:args.max_positions]
-    r = EngineRunner(args.engine_cmd[0], args.engine_cmd[1:], time=args.time, depth=args.depth,
-                     threads = args.jobs, observer=Progress(len(p), args.jobs))
+    r = EngineRunner(args.engine_cmd[0], args.engine_cmd[1:], time=args.time,
+                     depth=args.depth, threads=args.jobs,
+                     observer=Progress(len(p), args.jobs))
     for position in p:
         r.add(position)
     r.print_stats()

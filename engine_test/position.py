@@ -1,5 +1,6 @@
 import lzma
 
+
 class ScoreSimple:
     @property
     def kind(self):
@@ -11,7 +12,7 @@ class ScoreSimple:
 
     def __lt__(self, other):
         return self._to_tuple() < other._to_tuple()
-    
+
     def __le__(self, other):
         return self._to_tuple() <= other._to_tuple()
 
@@ -54,7 +55,7 @@ class ScoreMate:
 
     def __lt__(self, other):
         return self._to_tuple() < other._to_tuple()
-    
+
     def __le__(self, other):
         return self._to_tuple() <= other._to_tuple()
 
@@ -139,7 +140,7 @@ class Position:
 
     def best_score(self):
         return max((move.score() for move in self))
-    
+
     def best_score_depth(self, depth):
         return max((move.score_depth(depth) for move in self))
 

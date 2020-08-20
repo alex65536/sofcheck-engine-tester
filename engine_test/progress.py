@@ -11,7 +11,7 @@ class Progress:
         self.__each = each
         self.__count = 0
         self.__lock = Lock()
-    
+
     def observe(self, *args):
         with self.__lock:
             self.__count += 1
@@ -22,4 +22,4 @@ class Progress:
         cur_time = time.monotonic() - self.__time
         total_time = cur_time / self.__count * self.__total
         print('Progress: {}/{} ({}/{})'.format(self.__count, self.__total,
-            util.human_time(cur_time), util.human_time(total_time)))
+              util.human_time(cur_time), util.human_time(total_time)))
