@@ -3,6 +3,8 @@ from engine import Engine
 from threading import Thread
 from queue import Queue, Empty
 import os
+import sys
+import traceback
 
 
 class EngineRunner:
@@ -18,6 +20,7 @@ class EngineRunner:
         self.__depth = depth
         self.__observer = observer
         self.__queue = Queue()
+        self.__has_exception = False
         for _ in range(threads):
             thread = Thread(target=self.__thread_proc,
                             args=[Engine(exe_name, args)])
@@ -29,14 +32,23 @@ class EngineRunner:
             self.__queue.put(None)
         for thread in self.__threads:
             thread.join()
+        if self.__has_exception:
+            raise RuntimeError('Some threads finished with exception')
 
     def __thread_proc(self, engine):
-        while True:
-            position = self.__queue.get()
-            if position is None:
-                break
-            self.__eval_position(engine, position)
-            self.__observer.observe(position)
+        try:
+            try:
+                while True:
+                    position = self.__queue.get()
+                    if position is None:
+                        break
+                    self.__eval_position(engine, position)
+                    self.__observer.observe(position)
+            finally:
+                engine.terminate()
+        except:
+            traceback.print_exc(file=sys.stderr)
+            self.__has_exception = True
 
     def add(self, position):
         self.__queue.put(position)

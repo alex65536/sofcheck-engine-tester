@@ -79,9 +79,15 @@ class Engine:
             return
         self.__write_line('position fen ' + fen)
 
+    def kill(self):
+        self.__subprocess.kill()
+
     def terminate(self):
-        self.__write_line('quit')
-        self.__subprocess.wait()
+        try:
+            self.__write_line('quit')
+            self.__subprocess.wait()
+        except:
+            self.kill()
 
     def run_fixed_time(self, time):
         self.__write_line('go movetime ' + str(time))
