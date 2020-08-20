@@ -3,3 +3,4 @@
 */lib
 */lib/*
 *.lps
+*/__pycache__
