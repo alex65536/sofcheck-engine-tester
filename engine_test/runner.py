@@ -9,7 +9,7 @@ import traceback
 
 class EngineRunner:
     def __init__(self, exe_name, args=[], time=None, depth=None, threads=None,
-                 observer=None):
+                 observer=None, cmp_full=False):
         assert time is None or depth is None
         if threads is None:
             threads = os.cpu_count()
@@ -19,6 +19,7 @@ class EngineRunner:
         self.__time = time
         self.__depth = depth
         self.__observer = observer
+        self.__cmp_full = cmp_full
         self.__queue = Queue()
         self.__has_exception = False
         for _ in range(threads):
@@ -61,8 +62,12 @@ class EngineRunner:
             res = engine.run_fixed_time(self.__time)
         elif self.__depth is not None:
             res = engine.run_fixed_depth(self.__depth)
-        best_score = position.best_score_depth(res.depth).value
-        calculated_score = position.move(res.move).score_depth(res.depth)
+        if self.__cmp_full:
+            best_score = position.best_score().value
+            calculated_score = position.move(res.move).score()
+        else:
+            best_score = position.best_score_depth(res.depth).value
+            calculated_score = position.move(res.move).score_depth(res.depth)
         if calculated_score.kind == "simple":
             calculated_score = calculated_score.value
         else:

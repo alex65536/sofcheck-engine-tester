@@ -21,6 +21,8 @@ if __name__ == '__main__':
                         help='run on fixed time TIME')
     parser.add_argument('-d', '--depth', type=int, default=None,
                         help='run on fixed depth DEPTH, conflicts with --time')
+    parser.add_argument('-c', '--compare-full', action='store_true',
+                        help='compare with data on full depth, not on the current depth')
 
     args = parser.parse_args()
     if args.time is None and args.depth is None:
@@ -30,7 +32,8 @@ if __name__ == '__main__':
     sys.stderr.write('Data loaded successfully.\n')
     r = EngineRunner(args.engine_cmd[0], args.engine_cmd[1:], time=args.time,
                      depth=args.depth, threads=args.jobs,
-                     observer=Progress(len(p), args.jobs))
+                     observer=Progress(len(p), args.jobs),
+                     cmp_full=args.compare_full)
     for position in p:
         r.add(position)
     r.print_stats()
