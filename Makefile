@@ -10,4 +10,5 @@ engine_data_create:
 
 data: engine_data_create
 	EngineDataCreate/bin/engine_data_create games/*.pgn > data/positions.data
+	lzma data/positions.data
 .PHONY: data
