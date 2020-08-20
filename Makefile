@@ -5,10 +5,10 @@ help:
 .PHONY: help
 
 engine_data_create:
-	cd EngineDataCreate && lazbuild EngineDataCreate.lpi
+	cd engine_data_create && lazbuild EngineDataCreate.lpi
 .PHONY: engine_data_create
 
 data: engine_data_create
-	EngineDataCreate/bin/engine_data_create games/*.pgn > data/positions.data
+	engine_data_create/bin/engine_data_create games/*.pgn > data/positions.data
 	lzma data/positions.data
 .PHONY: data
