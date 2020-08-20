@@ -27,7 +27,7 @@ if __name__ == '__main__':
         args.time = 1000
 
     p = position.load_from_file(args.data, args.max_positions)
-    sys.stderr.write('Data loaded\n')
+    sys.stderr.write('Data loaded successfully.\n')
     r = EngineRunner(args.engine_cmd[0], args.engine_cmd[1:], time=args.time,
                      depth=args.depth, threads=args.jobs,
                      observer=Progress(len(p), args.jobs))
