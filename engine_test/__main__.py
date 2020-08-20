@@ -26,10 +26,8 @@ if __name__ == '__main__':
     if args.time is None and args.depth is None:
         args.time = 1000
 
-    p = position.load_from_file(args.data)
-    if args.max_positions is not None:
-        if len(p) > args.max_positions:
-            p = p[:args.max_positions]
+    p = position.load_from_file(args.data, args.max_positions)
+    sys.stderr.write('Data loaded\n')
     r = EngineRunner(args.engine_cmd[0], args.engine_cmd[1:], time=args.time,
                      depth=args.depth, threads=args.jobs,
                      observer=Progress(len(p), args.jobs))
