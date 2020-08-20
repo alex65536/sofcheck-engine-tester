@@ -75,9 +75,9 @@ class Engine:
 
     def set_position(self, fen=None):
         if not fen:
-            self.__write_line('position startpos')
+            self.__write_line('position startpos moves')
             return
-        self.__write_line('position fen ' + fen)
+        self.__write_line('position fen ' + fen + ' moves')
 
     def kill(self):
         self.__subprocess.kill()

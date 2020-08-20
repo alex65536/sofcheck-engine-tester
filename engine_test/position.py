@@ -105,7 +105,7 @@ class Move:
     def __str__(self):
         result = 'move ' + self.move_str + '\n'
         for depth, score in enumerate(self.__scores):
-            if self.__scores is None:
+            if score is None:
                 continue
             result += 'depth ' + str(depth) + ' ' + str(score) + '\n'
         result += 'end move\n'

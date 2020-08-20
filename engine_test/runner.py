@@ -66,8 +66,9 @@ class EngineRunner:
             best_score = position.best_score().value
             calculated_score = position.move(res.move).score()
         else:
-            best_score = position.best_score_depth(res.depth).value
-            calculated_score = position.move(res.move).score_depth(res.depth)
+            depth = max(1, res.depth - 1)
+            best_score = position.best_score_depth(depth).value
+            calculated_score = position.move(res.move).score_depth(depth)
         if calculated_score.kind == "simple":
             calculated_score = calculated_score.value
         else:
