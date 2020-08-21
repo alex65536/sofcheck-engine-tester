@@ -150,7 +150,7 @@ var
       else
         raise Exception.Create('Some option types are not supported');
     end;
-    Engine.WaitForStop;
+    Engine.WaitForStop(MaxInt);
   end;
 
 begin

@@ -114,7 +114,7 @@ type
         MoveChain.Clear(FBoard.RawBoard);
         MoveChain.Add(Move);
         StartFixedTime(200);
-        WaitForStop;
+        WaitForStop(MaxInt);
       end;
     finally
       FEngineRunning := False;
