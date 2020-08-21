@@ -4,6 +4,7 @@ These utilities include:
 
 - [Data extractor from PGNs](#data-extractor-from-pgns)
 - [Position cost tester](#position-cost-tester)
+- [Battlefield](#battlefield)
 
 This project is mostly written in Pascal, as it relies on core libraries of
 [Chess 256](https://github.com/alex65536/Chess256). These libraries were taken from the source
@@ -49,6 +50,23 @@ following way:
 
 To use this utility, run `engine_test/engine_test.py`. Run it with `--help` option to get more
 details on how to use it.
+
+### Battlefield
+
+BattleField is a tool to run many micro engine matches. It allows two engines to play many games
+either on fixed time per move or on fixed depth.
+
+To build this utility, run
+
+~~~~~
+$ cd battlefield
+$ lazbuild Battlefield.lpi
+~~~~~
+
+Alternatively, you can open and build the project `battlefield/Battlefield.lpi` in Lazarus IDE.
+
+The resulting binary is located in `battlefield/bin/battlefield`. Run the binary without arguments
+to get more information on how to use it.
 
 # License
 
