@@ -19,7 +19,7 @@ if __name__ == '__main__':
                         help='number of jobs to execute\
                             (default: number of CPU cores)')
     parser.add_argument('-t', '--time', type=int, default=None,
-                        help='run on fixed time TIME')
+                        help='run on fixed time TIME (in milliseconds)')
     parser.add_argument('-d', '--depth', type=int, default=None,
                         help='run on fixed depth DEPTH, conflicts with --time')
     parser.add_argument('-c', '--compare-full', action='store_true',

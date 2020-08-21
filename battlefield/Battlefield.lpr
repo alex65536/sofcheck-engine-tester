@@ -29,8 +29,8 @@ uses {$IFDEF UNIX}
     WriteLn('-g GAMES     Number of games to run');
     WriteLn('-d DEPTH     Run engines on fixed depth. You must specify either -d');
     WriteLn('             or -t');
-    WriteLn('-t TIME      Run engines on fixed time per move. You must specify');
-    WriteLn('             either -d or -t');
+    WriteLn('-t TIME      Run engines on fixed time (in milliseconds) per move.');
+    WriteLn('             You must specify either -d or -t');
   end;
 
   procedure ShowError(const Error: string);
