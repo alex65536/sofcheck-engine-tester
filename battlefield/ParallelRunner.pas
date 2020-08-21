@@ -210,12 +210,17 @@ begin
       break;
     try
       FRunners[Index].Play(FOptions);
-      if Assigned(FProgress) then
-        FProgress.Step;
+      EnterCriticalSection(FLock);
+      try
+        if Assigned(FProgress) then
+          FProgress.Step;
+      finally
+        LeaveCriticalSection(FLock);
+      end;
     except
       on E: Exception do
       begin
-        EnterCriticalsection(FLock);
+        EnterCriticalSection(FLock);
         try
           WriteLn(StdErr, 'Thread finished with exception:');
           WriteLn(StdErr, 'Exception ', E.ClassName, ': ', E.Message);
@@ -223,7 +228,7 @@ begin
           WriteLn(StdErr, 'Terminating now.');
           halt(1);
         finally
-          LeaveCriticalsection(FLock);
+          LeaveCriticalSection(FLock);
         end;
       end;
     end;

@@ -78,8 +78,8 @@ begin
   try
     Result := '[White "' + StringToTagValue(WhiteName) + '"]' +
       LineEnding + '[Black" ' + StringToTagValue(BlackName) + '"]' +
-      LineEnding + LineEnding + Chain.ConvertToString(Converter, ' ') + ' ' +
-      GameResultMeanings[Winner] + LineEnding;
+      LineEnding + LineEnding + Chain.ConvertToString(Converter, ' ') +
+      ' ' + GameResultMeanings[Winner] + LineEnding;
   finally
     FreeAndNil(Converter);
   end;
@@ -139,6 +139,7 @@ var
   GameResult: RGameResult;
   Color: TPieceColor;
   Move: RChessMove;
+  UciConverter: TUCIMoveConverter;
 
   procedure RunEngine(Engine: TAbstractChessEngine);
   begin
@@ -153,8 +154,10 @@ var
   end;
 
 begin
+  UciConverter := nil;
   Chain := TMoveChain.Create;
   try
+    UciConverter := TUCIMoveConverter.Create(Chain.Boards[-1]);
     FFirstEngine.MoveChain.Clear;
     FSecondEngine.MoveChain.Clear;
     if FSwitchSides then
@@ -182,9 +185,22 @@ begin
       Color := Chain.Boards[Chain.Count - 1].MoveSide;
       RunEngine(Engines[Color]);
       Move := FEngineResult.BestMove;
-      FFirstEngine.MoveChain.Add(Move);
-      FSecondEngine.MoveChain.Add(Move);
-      Chain.Add(Move);
+      try
+        Chain.Add(Move);
+        FFirstEngine.MoveChain.Add(Move);
+        FSecondEngine.MoveChain.Add(Move);
+      except
+        on E: EChessRules do
+        begin
+          WriteLn(StdErr, 'Engine "' + Engines[Color].Name +
+            '" played an invalid move ' + UciConverter.GetMoveString(Move));
+          if Color = pcWhite then
+            CurGame.Winner := gwBlack
+          else
+            CurGame.Winner := gwWhite;
+          break;
+        end;
+      end;
     end;
     case CurGame.Winner of
       gwWhite: if FSwitchSides then
@@ -199,8 +215,10 @@ begin
     end;
   except
     FreeAndNil(Chain);
+    FreeAndNil(UciConverter);
     raise;
   end;
+  FreeAndNil(UciConverter);
   FGames.PushBack(CurGame);
 end;
 
