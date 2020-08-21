@@ -160,7 +160,8 @@ type
       read FOnAnalysisMessage write FOnAnalysisMessage;
     // Methods
     procedure StartInfinite; virtual;
-    procedure StartFixedTime(TimeMsec: int64); virtual;
+    procedure StartFixedTime(TimeMsec: int64); virtual; 
+    procedure StartFixedDepth(Depth: int64); virtual;
     procedure Stop; virtual; // the engine won't stop before sending OnStop!
     function WaitForStop(Time: integer = MaxWaitTime): boolean; virtual;
     function WaitForEngine(Time: integer = MaxWaitTime): boolean; virtual;
@@ -209,7 +210,8 @@ type
     procedure ApplyOption(const AValue: string); overload;
     // Overridden methods
     procedure StartInfinite; override;
-    procedure StartFixedTime(TimeMsec: int64); override;
+    procedure StartFixedTime(TimeMsec: int64); override; 
+    procedure StartFixedDepth(Depth: int64); override;
     procedure Stop; override;
     function WaitForStop(Time: integer = MaxWaitTime): boolean; override;
     function WaitForEngine(Time: integer = MaxWaitTime): boolean; override;
@@ -409,6 +411,12 @@ begin
   DoStart;
 end;
 
+procedure TAbstractChessEngine.StartFixedDepth(Depth: int64);
+// Starts the analysis with fixed depth.
+begin
+  DoStart;
+end;
+
 {$HINTS ON}
 
 procedure TAbstractChessEngine.Stop;
@@ -586,9 +594,16 @@ procedure TUCIChessEngine.StartFixedTime(TimeMsec: int64);
 begin
   if State.Active then
     Exit;
-  inherited StartInfinite;
+  inherited StartFixedTime(TimeMsec);
   FProcess.SendCommand(TSetPositionCommand.Create(MoveChain, False));
   FProcess.SendCommand(TFixedTimeAnalysisCommand.Create(TimeMsec));
+end;
+
+procedure TUCIChessEngine.StartFixedDepth(Depth: int64);
+begin
+  inherited StartFixedDepth(Depth);
+  FProcess.SendCommand(TSetPositionCommand.Create(MoveChain, False));
+  FProcess.SendCommand(TFixedDepthAnalysisCommand.Create(Depth));
 end;
 
 procedure TUCIChessEngine.Stop;

@@ -130,6 +130,16 @@ type
     constructor Create(TimeMsec: int64);
   end;
 
+  { TFixedDepthAnalysisCommand }
+
+  TFixedDepthAnalysisCommand = class(TAnalysisCommand) // "go depth" command
+  private
+    FDepth: int64;
+  public
+    function GetCommandString: string; override;
+    constructor Create(Depth: int64);
+  end;
+
   { TStopAnalysisCommand }
 
   TStopAnalysisCommand = class(TEngineCommand) // "stop" command
@@ -478,6 +488,18 @@ begin
   else
   if Length(S) = 5 then
     Result := S[5] in ['n', 'b', 'r', 'q'];
+end;
+
+{ TFixedDepthAnalysisCommand }
+
+function TFixedDepthAnalysisCommand.GetCommandString: string;
+begin
+  Result := 'go depth ' + IntToStr(FDepth);
+end;
+
+constructor TFixedDepthAnalysisCommand.Create(Depth: int64);
+begin
+  FDepth := Depth;
 end;
 
 { TFixedTimeAnalysisCommand }
