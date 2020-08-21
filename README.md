@@ -5,6 +5,11 @@ These utilities include:
 - [Data extractor from PGNs](#data-extractor-from-pgns)
 - [Position cost tester](#position-cost-tester)
 
+
+This project is mostly written in Pascal, as it relies on core libraries of
+[Chess 256](https://github.com/alex65536/Chess256). These libraries were taken from the source
+code of Chess 256 and slightly modified.
+
 ## Dependencies
 
 On Debian/Ubuntu, you need to install the following packages:
@@ -44,3 +49,7 @@ following way:
 - reports the staticstics (based on given positions and computed _error_)
 
 To use this utility, run `engine_test/engine_test.py`. See help for more details.
+
+# License
+
+GNU GPL v3 (or any later version)
