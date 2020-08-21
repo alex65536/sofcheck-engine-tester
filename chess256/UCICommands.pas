@@ -31,7 +31,7 @@ interface
 
 uses
   Classes, SysUtils, FGL, AvgLvlTree, EngineProcesses, MoveChains, ChessRules,
-  MoveConverters, EngineScores, ChessTime;
+  MoveConverters, EngineScores;
 
 const
   EmptyStr = '<empty>';
