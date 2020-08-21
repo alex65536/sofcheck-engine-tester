@@ -1,6 +1,6 @@
-*/backup
-*/backup/*
-*/lib
-*/lib/*
+**/backup
+**/backup/*
+**/lib
+**/lib/*
 *.lps
-*/__pycache__
+**/__pycache__/*
