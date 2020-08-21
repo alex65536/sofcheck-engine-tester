@@ -1,6 +1,6 @@
 import subprocess
 from subprocess import PIPE
-from position import ScoreSimple, ScoreMate
+from common.position import ScoreSimple, ScoreMate
 
 
 class EngineError(Exception):

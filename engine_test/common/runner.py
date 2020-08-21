@@ -1,5 +1,5 @@
-from position import Position
-from engine import Engine
+from common.position import Position
+from common.engine import Engine
 from threading import Thread
 from queue import Queue, Empty
 import os

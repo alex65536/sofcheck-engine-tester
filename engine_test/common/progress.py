@@ -1,6 +1,6 @@
 import time
 import sys
-import util
+from common import util
 from threading import Lock
 
 

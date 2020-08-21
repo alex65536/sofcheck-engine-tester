@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
 import argparse
-import position
-from runner import EngineRunner
-from progress import Progress
+from common import position
+from common.runner import EngineRunner
+from common.progress import Progress
 import os
 import sys
 
