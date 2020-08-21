@@ -36,7 +36,6 @@ type
   private
     FFirstEngine: TAbstractChessEngine;
     FSecondEngine: TAbstractChessEngine;
-    FSwitchSides: boolean;
     FFirstWins: integer;
     FSecondWins: integer;
     FDraws: integer;
@@ -60,7 +59,7 @@ type
     property GameCount: integer read GetGameCount;
     property Games[I: integer]: RGame read GetGames;
 
-    procedure Play(const Options: REngineOptions);
+    procedure Play(const Options: REngineOptions; SwitchSides: boolean);
 
     procedure Initialize;
     procedure Uninitialize;
@@ -107,7 +106,6 @@ constructor TEngineRunner.Create(FirstEngine, SecondEngine: TAbstractChessEngine
 begin
   FFirstEngine := FirstEngine;
   FSecondEngine := SecondEngine;
-  FSwitchSides := False;
   FFirstWins := 0;
   FSecondWins := 0;
   FDraws := 0;
@@ -131,7 +129,7 @@ begin
   Result := FGames.Back;
 end;
 
-procedure TEngineRunner.Play(const Options: REngineOptions);
+procedure TEngineRunner.Play(const Options: REngineOptions; SwitchSides: boolean);
 var
   CurGame: RGame;
   Chain: TMoveChain;
@@ -160,7 +158,7 @@ begin
     UciConverter := TUCIMoveConverter.Create(Chain.Boards[-1]);
     FFirstEngine.MoveChain.Clear;
     FSecondEngine.MoveChain.Clear;
-    if FSwitchSides then
+    if SwitchSides then
     begin
       Engines[pcWhite] := FSecondEngine;
       Engines[pcBlack] := FFirstEngine;
@@ -170,7 +168,6 @@ begin
       Engines[pcWhite] := FFirstEngine;
       Engines[pcBlack] := FSecondEngine;
     end;
-    FSwitchSides := not FSwitchSides;
     CurGame.Chain := Chain;
     CurGame.WhiteName := Engines[pcWhite].Name;
     CurGame.BlackName := Engines[pcBlack].Name;
@@ -203,14 +200,14 @@ begin
       end;
     end;
     case CurGame.Winner of
-      gwWhite: if FSwitchSides then
-          Inc(FFirstWins)
-        else
-          Inc(FSecondWins);
-      gwBlack: if FSwitchSides then
+      gwWhite: if SwitchSides then
           Inc(FSecondWins)
         else
           Inc(FFirstWins);
+      gwBlack: if SwitchSides then
+          Inc(FFirstWins)
+        else
+          Inc(FSecondWins);
       gwDraw: Inc(FDraws);
     end;
   except

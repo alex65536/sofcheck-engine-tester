@@ -196,6 +196,7 @@ end;
 procedure TParallelRunner.ThreadFunc(Index: integer);
 var
   MustStop: boolean;
+  SwitchSides: boolean;
 begin
   while True do
   begin
@@ -205,6 +206,7 @@ begin
       if FGames <> 0 then
       begin
         MustStop := False;
+        SwitchSides := FGames mod 2 = 0;
         Dec(FGames);
       end;
     finally
@@ -213,7 +215,7 @@ begin
     if MustStop then
       break;
     try
-      FRunners[Index].Play(FOptions);
+      FRunners[Index].Play(FOptions, SwitchSides);
       EnterCriticalSection(FLock);
       try
         if Assigned(FProgress) then
