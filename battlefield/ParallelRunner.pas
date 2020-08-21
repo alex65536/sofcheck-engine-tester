@@ -132,10 +132,13 @@ begin
       FreeAndNil(FirstEngine);
       FreeAndNil(SecondEngine);
     end;
-    FRunners[I].Initialize;
+    if Assigned(FRunners[I]) then
+      FRunners[I].Initialize;
   end;
   for I := 0 to Jobs - 1 do
   begin
+    if not Assigned(FRunners[I]) then
+      continue;
     New(DataPtr);
     DataPtr^.Instance := Self;
     DataPtr^.Index := I;
@@ -183,7 +186,8 @@ var
 begin
   DoneCriticalsection(FLock);
   for Thread in FThreads do
-    CloseThread(Thread);
+    if Thread <> 0 then
+      CloseThread(Thread);
   for Runner in FRunners do
     Runner.Free;
   inherited Destroy;
