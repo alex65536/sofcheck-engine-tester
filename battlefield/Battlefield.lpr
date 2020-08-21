@@ -131,7 +131,7 @@ begin
     begin
       if Param = ParamCount then
         ShowError('PGN_FILE expected');
-      PgnFile := ParamStr(Param);
+      PgnFile := ParamStr(Param + 1);
       Inc(Param, 2);
       continue;
     end;
