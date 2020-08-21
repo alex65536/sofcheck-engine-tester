@@ -17,7 +17,7 @@ uses {$IFDEF UNIX}
     begin
       WriteLn('"Clear the battlefield and let me see..."');
       WriteLn;
-      WriteLn('BattleField - tool to run micro-tournaments between chess engines');
+      WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
     WriteLn('Usage: battlefield [-h] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
     WriteLn('                   [-d DEPTH] [-t TIMES] ENGINE1 ENGINE2');
