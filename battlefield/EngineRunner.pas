@@ -77,7 +77,7 @@ begin
   Converter := TPGNMoveConverter.Create(Chain.Boards[-1]);
   try
     Result := '[White "' + StringToTagValue(WhiteName) + '"]' +
-      LineEnding + '[Black" ' + StringToTagValue(BlackName) + '"]' +
+      LineEnding + '[Black "' + StringToTagValue(BlackName) + '"]' +
       LineEnding + LineEnding + Chain.ConvertToString(Converter, ' ') +
       ' ' + GameResultMeanings[Winner] + LineEnding;
   finally
