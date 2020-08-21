@@ -22,15 +22,15 @@ uses {$IFDEF UNIX}
     WriteLn('Usage: battlefield [-h] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
     WriteLn('                   [-d DEPTH] [-t TIMES] ENGINE1 ENGINE2');
     WriteLn;
-    WriteLn('-h           Show this help and exit');
-    WriteLn('-q           Do not show progress');
-    WriteLn('-j JOBS      Specify number of games to run simultaneoulsly');
-    WriteLn('-o PGN_FILE  Write PGN of the games into PGN_FILE');
-    WriteLn('-g GAMES     Number of games to run');
-    WriteLn('-d DEPTH     Run engines on fixed depth. You must specify either -d');
-    WriteLn('             or -t');
-    WriteLn('-t TIME      Run engines on fixed time (in milliseconds) per move.');
-    WriteLn('             You must specify either -d or -t');
+    WriteLn('  -h           Show this help and exit');
+    WriteLn('  -q           Do not show progress');
+    WriteLn('  -j JOBS      Specify number of games to run simultaneoulsly');
+    WriteLn('  -o PGN_FILE  Write PGN of the games into PGN_FILE');
+    WriteLn('  -g GAMES     Number of games to run');
+    WriteLn('  -d DEPTH     Run engines on fixed depth. You must specify either -d');
+    WriteLn('               or -t');
+    WriteLn('  -t TIME      Run engines on fixed time (in milliseconds) per move.');
+    WriteLn('               You must specify either -d or -t');
   end;
 
   procedure ShowError(const Error: string);
