@@ -30,12 +30,34 @@ type
     Value: int64;
   end;
 
+  { TEngineFactory }
+
+  TEngineFactory = class
+  public
+    function CreateChessEngine: TAbstractChessEngine;
+  protected
+    function DoCreateChessEngine: TAbstractChessEngine; virtual; abstract;
+  end;
+
+  { TUciEngineFactory }
+
+  TUciEngineFactory = class(TEngineFactory)
+  private
+    FExeName: string;
+  public
+    constructor Create(const AExeName: string);
+  protected
+    function DoCreateChessEngine: TAbstractChessEngine; override;
+  end;
+
   { TEngineRunner }
 
   TEngineRunner = class
   private
     FFirstEngine: TAbstractChessEngine;
     FSecondEngine: TAbstractChessEngine;
+    FFirstFactory: TEngineFactory;
+    FSecondFactory: TEngineFactory;
     FFirstWins: integer;
     FSecondWins: integer;
     FDraws: integer;
@@ -47,7 +69,7 @@ type
     function GetGames(I: integer): RGame;
     function GetGameCount: integer;
   public
-    constructor Create(FirstEngine, SecondEngine: TAbstractChessEngine);
+    constructor Create(FirstFactory, SecondFactory: TEngineFactory);
     destructor Destroy; override;
 
     property FirstWins: integer read FFirstWins;
@@ -61,11 +83,35 @@ type
 
     procedure Play(const Options: REngineOptions; SwitchSides: boolean);
 
-    procedure Initialize;
-    procedure Uninitialize;
+    procedure BeforeDestruction; override;
   end;
 
 implementation
+
+{ TUciEngineFactory }
+
+constructor TUciEngineFactory.Create(const AExeName: string);
+begin
+  FExeName := AExeName;
+end;
+
+function TUciEngineFactory.DoCreateChessEngine: TAbstractChessEngine;
+begin
+  Result := TUCIChessEngine.Create(FExeName);
+end;
+
+{ TEngineFactory }
+
+function TEngineFactory.CreateChessEngine: TAbstractChessEngine;
+begin
+  Result := DoCreateChessEngine;
+  try
+    Result.Initialize;
+  except
+    FreeAndNil(Result);
+    raise;
+  end;
+end;
 
 { RGame }
 
@@ -102,10 +148,12 @@ begin
   Result := FGames.Size;
 end;
 
-constructor TEngineRunner.Create(FirstEngine, SecondEngine: TAbstractChessEngine);
+constructor TEngineRunner.Create(FirstFactory, SecondFactory: TEngineFactory);
 begin
-  FFirstEngine := FirstEngine;
-  FSecondEngine := SecondEngine;
+  FFirstFactory := FirstFactory;
+  FSecondFactory := SecondFactory;
+  FFirstEngine := FirstFactory.CreateChessEngine;
+  FSecondEngine := SecondFactory.CreateChessEngine;
   FFirstWins := 0;
   FSecondWins := 0;
   FDraws := 0;
@@ -116,8 +164,11 @@ destructor TEngineRunner.Destroy;
 var
   I: integer;
 begin
-  for I := 0 to integer(FGames.Size) - 1 do
-    FGames[I].Chain.Free;
+  if FGames <> nil then
+  begin
+    for I := 0 to integer(FGames.Size) - 1 do
+      FGames[I].Chain.Free;
+  end;
   FreeAndNil(FGames);
   FreeAndNil(FFirstEngine);
   FreeAndNil(FSecondEngine);
@@ -149,6 +200,20 @@ var
         raise Exception.Create('Some option types are not supported');
     end;
     Engine.WaitForStop(MaxInt);
+  end;
+
+  procedure RestartEngine(Engine: TAbstractChessEngine);
+  begin
+    if Engine = FFirstEngine then
+    begin
+      FreeAndNil(FFirstEngine);
+      FFirstEngine := FFirstFactory.CreateChessEngine;
+    end
+    else if Engine = FSecondEngine then
+    begin
+      FreeAndNil(FSecondEngine);
+      FSecondEngine := FSecondFactory.CreateChessEngine;
+    end;
   end;
 
 begin
@@ -189,6 +254,7 @@ begin
           CurGame.Winner := gwBlack
         else
           CurGame.Winner := gwWhite;
+        RestartEngine(Engines[Color]);
         break;
       end;
       try
@@ -228,16 +294,13 @@ begin
   FGames.PushBack(CurGame);
 end;
 
-procedure TEngineRunner.Initialize;
+procedure TEngineRunner.BeforeDestruction;
 begin
-  FFirstEngine.Initialize;
-  FSecondEngine.Initialize;
-end;
-
-procedure TEngineRunner.Uninitialize;
-begin
-  FFirstEngine.Uninitialize;
-  FSecondEngine.Uninitialize;
+  inherited BeforeDestruction;
+  if FFirstEngine <> nil then
+    FFirstEngine.Uninitialize;
+  if FSecondEngine <> nil then
+    FSecondEngine.Uninitialize;
 end;
 
 end.

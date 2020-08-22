@@ -5,7 +5,7 @@ unit ParallelRunner;
 interface
 
 uses
-  Classes, SysUtils, ChessEngines, EngineRunner, Progress;
+  Classes, SysUtils, EngineRunner, Progress;
 
 type
 
@@ -49,6 +49,8 @@ type
     FRunners: array of TEngineRunner;
     FOptions: REngineOptions;
     FProgress: TAbstractProgress;
+    FFirstFactory: TUciEngineFactory;
+    FSecondFactory: TUciEngineFactory;
 
     procedure ThreadFunc(Index: integer);
   end;
@@ -102,7 +104,6 @@ constructor TParallelRunner.Create(Games: integer;
   Jobs: integer; Progress: TAbstractProgress);
 var
   I: integer;
-  FirstEngine, SecondEngine: TUCIChessEngine;
   DataPtr: PThreadFuncData;
 begin
   if Jobs = 0 then
@@ -113,28 +114,15 @@ begin
   FGames := Games;
   SetLength(FThreads, Jobs);
   SetLength(FRunners, Jobs);
+  FFirstFactory := TUciEngineFactory.Create(FirstEngineExe);
+  FSecondFactory := TUciEngineFactory.Create(SecondEngineExe);
   for I := 0 to Jobs - 1 do
   begin
     FThreads[I] := 0;
     FRunners[I] := nil;
   end;
   for I := 0 to Jobs - 1 do
-  begin
-    FirstEngine := nil;
-    SecondEngine := nil;
-    try
-      FirstEngine := TUCIChessEngine.Create(FirstEngineExe);
-      SecondEngine := TUCIChessEngine.Create(SecondEngineExe);
-      FRunners[I] := TEngineRunner.Create(FirstEngine, SecondEngine);
-      FirstEngine := nil;
-      SecondEngine := nil;
-    finally
-      FreeAndNil(FirstEngine);
-      FreeAndNil(SecondEngine);
-    end;
-    if Assigned(FRunners[I]) then
-      FRunners[I].Initialize;
-  end;
+    FRunners[I] := TEngineRunner.Create(FFirstFactory, FSecondFactory);
   for I := 0 to Jobs - 1 do
   begin
     if not Assigned(FRunners[I]) then
@@ -156,13 +144,8 @@ begin
 end;
 
 procedure TParallelRunner.BeforeDestruction;
-var
-  Runner: TEngineRunner;
 begin
   Join;
-  for Runner in FRunners do
-    if Runner <> nil then
-      Runner.Uninitialize;
 end;
 
 procedure TParallelRunner.SaveGamesToStream(Stream: TStream);
@@ -184,12 +167,14 @@ var
   Thread: integer;
   Runner: TEngineRunner;
 begin
-  DoneCriticalsection(FLock);
+  DoneCriticalSection(FLock);
   for Thread in FThreads do
     if Thread <> 0 then
       CloseThread(Thread);
   for Runner in FRunners do
     Runner.Free;
+  FreeAndNil(FFirstFactory);
+  FreeAndNil(FSecondFactory);
   inherited Destroy;
 end;
 
@@ -200,7 +185,7 @@ var
 begin
   while True do
   begin
-    EnterCriticalsection(FLock);
+    EnterCriticalSection(FLock);
     try
       MustStop := True;
       if FGames <> 0 then
@@ -210,7 +195,7 @@ begin
         Dec(FGames);
       end;
     finally
-      LeaveCriticalsection(FLock);
+      LeaveCriticalSection(FLock);
     end;
     if MustStop then
       break;
