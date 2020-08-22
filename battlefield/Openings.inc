@@ -1,7 +1,7 @@
 // Graham2014-1F.cgb opening book by Graham Banks.
 // Source URL: http://www.talkchess.com/forum3/viewtopic.php?t=50541#p549216
 const
-  Openings: array [0 .. 247] of string = (
+  Openings: array [0 .. 246] of string = (
     '1. f4 e5 2. fxe5 d6 3. exd6 Bxd6 4. Nf3 g5 5. g3 g4 6. Nh4 Ne7 7. d4',
     '1. f4 d5 2. Nf3 Nf6 3. e3 g6 4. b3 Bg7 5. Bb2 O-O 6. Be2 c5 7. O-O Nc6 8. Ne5 Qc7',
     '1. f4 d5 2. Nf3 Nf6 3. e3 Bg4 4. h3 Bxf3 5. Qxf3 Nbd7 6. Nc3 c6 7. g4',
@@ -161,7 +161,6 @@ const
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. c3 Qd5 7. Be3 Rg8 8. Qb3 Qxb3',
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. c3 Bf5 7. Ne2 Nd7 8. Ng3 Bg6',
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. c3 Bf5 7. Nf3 e6 8. Bd3 Bd6',
-    '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. Nf3 Bf5 7. Bd3 Bd6 8. 0-0 Qc7',
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. Nf3 Bg4 7. Be2 Qc7 8. Be3 Nd7',
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. Nf3 Bg4 7. Be2 e6 8. O-O Qc7',
     '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6 gxf6 6. Nf3 Bg4 7. Be2 e6 8. Bf4 Bd6',

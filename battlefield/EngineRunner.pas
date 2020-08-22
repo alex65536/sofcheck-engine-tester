@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, MoveChains, ChessRules, ChessEngines,
-  gvector, PGNUtils, MoveConverters, NotationLists;
+  gvector, PGNUtils, MoveConverters, NotationLists, OpeningBook;
 
 type
 
@@ -63,6 +63,7 @@ type
     FDraws: integer;
     FGames: TGameVector;
     FEngineResult: RAnalysisResult;
+    FBook: TDefaultOpeningBook;
 
     procedure EngineStop(Sender: TObject; const EngineResult: RAnalysisResult);
 
@@ -158,6 +159,7 @@ begin
   FSecondWins := 0;
   FDraws := 0;
   FGames := TGameVector.Create;
+  FBook := TDefaultOpeningBook.Create;
 end;
 
 destructor TEngineRunner.Destroy;
@@ -172,6 +174,7 @@ begin
   FreeAndNil(FGames);
   FreeAndNil(FFirstEngine);
   FreeAndNil(FSecondEngine);
+  FreeAndNil(FBook);
   inherited;
 end;
 
@@ -219,10 +222,11 @@ var
 begin
   UciConverter := nil;
   Chain := TMoveChain.Create;
+  FBook.FillOpening(Chain);
   try
     UciConverter := TUCIMoveConverter.Create;
-    FFirstEngine.MoveChain.Clear;
-    FSecondEngine.MoveChain.Clear;
+    FFirstEngine.MoveChain.Assign(Chain);
+    FSecondEngine.MoveChain.Assign(Chain);
     if SwitchSides then
     begin
       Engines[pcWhite] := FSecondEngine;
