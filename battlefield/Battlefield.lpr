@@ -135,6 +135,8 @@ begin
       Inc(Param, 2);
       continue;
     end;
+    if ParamStr(Param).StartsWith('-') then
+      ShowError('Unknown flag ' + ParamStr(Param));
     if FirstEngine = '' then
       FirstEngine := ParamStr(Param)
     else if SecondEngine = '' then
