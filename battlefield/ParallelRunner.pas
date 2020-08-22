@@ -146,6 +146,7 @@ end;
 procedure TParallelRunner.BeforeDestruction;
 begin
   Join;
+  inherited;
 end;
 
 procedure TParallelRunner.SaveGamesToStream(Stream: TStream);
