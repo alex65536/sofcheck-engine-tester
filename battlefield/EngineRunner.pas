@@ -73,7 +73,7 @@ function RGame.ToString: string;
 var
   Converter: TPGNMoveConverter;
 begin
-  Converter := TPGNMoveConverter.Create(Chain.Boards[-1]);
+  Converter := TPGNMoveConverter.Create;
   try
     Result := '[White "' + StringToTagValue(WhiteName) + '"]' +
       LineEnding + '[Black "' + StringToTagValue(BlackName) + '"]' +
@@ -155,7 +155,7 @@ begin
   UciConverter := nil;
   Chain := TMoveChain.Create;
   try
-    UciConverter := TUCIMoveConverter.Create(Chain.Boards[-1]);
+    UciConverter := TUCIMoveConverter.Create;
     FFirstEngine.MoveChain.Clear;
     FSecondEngine.MoveChain.Clear;
     if SwitchSides then
