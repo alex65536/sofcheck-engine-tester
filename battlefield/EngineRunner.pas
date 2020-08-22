@@ -182,6 +182,15 @@ begin
       Color := Chain.Boards[Chain.Count - 1].MoveSide;
       RunEngine(Engines[Color]);
       Move := FEngineResult.BestMove;
+      if Move.Kind = mkImpossible then
+      begin
+        WriteLn(StdErr, 'Engine "' + Engines[Color].Name + '" died :(');
+        if Color = pcWhite then
+          CurGame.Winner := gwBlack
+        else
+          CurGame.Winner := gwWhite;
+        break;
+      end;
       try
         Chain.Add(Move);
         FFirstEngine.MoveChain.Add(Move);

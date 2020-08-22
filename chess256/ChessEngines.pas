@@ -511,7 +511,7 @@ begin
     if Bool^ = RequiredState then
       Exit;
     ProcessMessages;
-    Sleep(15);
+    Sleep(1);
   end;
   Result := False;
 end;
@@ -528,7 +528,7 @@ begin
   begin
     if not FProcess.Process.Running then
       Exit;
-    Sleep(15);
+    Sleep(1);
   end;
   Result := False;
 end;
@@ -601,6 +601,8 @@ end;
 
 procedure TUCIChessEngine.StartFixedDepth(Depth: int64);
 begin
+  if State.Active then
+    Exit;
   inherited StartFixedDepth(Depth);
   FProcess.SendCommand(TSetPositionCommand.Create(MoveChain, False));
   FProcess.SendCommand(TFixedDepthAnalysisCommand.Create(Depth));
