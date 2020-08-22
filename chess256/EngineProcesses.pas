@@ -218,6 +218,11 @@ end;
 procedure TConsoleProcess.WriteLine(S: string);
 // Writes a line to the process.
 begin
+  if not FProcess.Active then
+  begin
+    DoTerminate;
+    exit;
+  end;
   {$IFDEF USELOG}
   WriteLn(LogFile, FProcess.Executable + ' <- Write "' + S + '"');
   Flush(LogFile);
