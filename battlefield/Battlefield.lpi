@@ -33,7 +33,7 @@
         <PackageName Value="FCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="25">
+    <Units Count="26">
       <Unit0>
         <Filename Value="Battlefield.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -134,6 +134,10 @@
         <Filename Value="../common/Utils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit24>
+      <Unit25>
+        <Filename Value="Openings.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit25>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
