@@ -169,8 +169,8 @@ begin
       Engines[pcBlack] := FSecondEngine;
     end;
     CurGame.Chain := Chain;
-    CurGame.WhiteName := Engines[pcWhite].Name;
-    CurGame.BlackName := Engines[pcBlack].Name;
+    CurGame.WhiteName := Engines[pcWhite].Name + ' at ' + Engines[pcWhite].FileName;
+    CurGame.BlackName := Engines[pcBlack].Name + ' at ' + Engines[pcBlack].FileName;
     while True do
     begin
       GameResult := Chain.GetGameResult;
@@ -184,7 +184,7 @@ begin
       Move := FEngineResult.BestMove;
       if Move.Kind = mkImpossible then
       begin
-        WriteLn(StdErr, 'Engine "' + Engines[Color].Name + '" died :(');
+        WriteLn(StdErr, 'Engine "' + Engines[Color].FileName + '" died :(');
         if Color = pcWhite then
           CurGame.Winner := gwBlack
         else
@@ -198,7 +198,7 @@ begin
       except
         on E: EChessRules do
         begin
-          WriteLn(StdErr, 'Engine "' + Engines[Color].Name +
+          WriteLn(StdErr, 'Engine "' + Engines[Color].FileName +
             '" played an invalid move ' + UciConverter.GetMoveString(Move));
           if Color = pcWhite then
             CurGame.Winner := gwBlack
