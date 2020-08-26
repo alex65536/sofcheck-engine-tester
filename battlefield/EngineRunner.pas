@@ -262,7 +262,7 @@ begin
         on E: EChessRules do
         begin
           WriteLn(StdErr, 'Engine "' + Engines[Color].FileName +
-            '" played an invalid move ' + UciConverter.GetMoveString(Move));
+            '" played an invalid move!');
           if Color = pcWhite then
             CurGame.Winner := gwBlack
           else
