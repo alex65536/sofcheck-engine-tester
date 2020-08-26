@@ -10,7 +10,8 @@ uses {$IFDEF UNIX}
   EngineRunner,
   ParallelRunner,
   Progress,
-  ScoreUtils;
+  ScoreUtils,
+  RichTextConsole;
 
   procedure ShowHelp(Banner: boolean = True);
   begin
@@ -40,6 +41,36 @@ uses {$IFDEF UNIX}
     WriteLn(StdErr, '---');
     ShowHelp(False);
     halt(1);
+  end;
+
+const
+  P0_9 = 1.64485362695147;
+  P0_95 = 1.95996398454005;
+  P0_99 = 2.57582930354890;
+
+  procedure ProbabilityCheck(P, Len: double; Win, Draw, Count: integer);
+  var
+    Window, Left, Right, Prob: double;
+  begin
+    Prob := (2 * Win + Draw) / (2 * Count);
+    Window := Len * (Sqrt(Prob * (1 - Prob)) / Sqrt(Count));
+    Left := Prob - Window;
+    Right := Prob + Window;
+    Write('  p = ', P: 0: 2, ': ');
+    rtcSetBold;
+    if Left >= 0.5 then
+    begin
+      rtcSetFgColor(cclGreen);
+      WriteLn('First wins');
+    end
+    else if Right <= 0.5 then
+    begin
+      rtcSetFgColor(cclRed);
+      WriteLn('Second wins');
+    end
+    else
+      WriteLn('Unclear');
+    rtcResetStyle;
   end;
 
 var
@@ -166,6 +197,10 @@ begin
       ', Draws: ', Runner.Draws);
     WriteLn('Score: ', ScorePairToStr(Runner.FirstWins, Runner.Draws,
       Runner.SecondWins));
+    WriteLn('Checking confidence interval:');
+    ProbabilityCheck(0.9, P0_9, Runner.FirstWins, Runner.Draws, Games);
+    ProbabilityCheck(0.95, P0_95, Runner.FirstWins, Runner.Draws, Games);
+    ProbabilityCheck(0.99, P0_99, Runner.FirstWins, Runner.Draws, Games);
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);
