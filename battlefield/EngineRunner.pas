@@ -244,7 +244,7 @@ begin
       Color := Chain.Boards[Chain.Count - 1].MoveSide;
       RunEngine(Engines[Color]);
       Move := FEngineResult.BestMove;
-      if Move.Kind = mkImpossible then
+      if Engines[Color].Terminated then
       begin
         WriteLn(StdErr, 'Engine "' + Engines[Color].FileName + '" died :(');
         if Color = pcWhite then
