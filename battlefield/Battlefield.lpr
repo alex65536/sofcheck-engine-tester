@@ -11,7 +11,8 @@ uses {$IFDEF UNIX}
   ParallelRunner,
   Progress,
   ScoreUtils,
-  RichTextConsole;
+  RichTextConsole,
+  VersionInfo;
 
   procedure ShowHelp(Banner: boolean = True);
   begin
@@ -21,10 +22,11 @@ uses {$IFDEF UNIX}
       WriteLn;
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
-    WriteLn('Usage: battlefield [-h] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
+    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
     WriteLn('                   [-d DEPTH] [-t TIMES] ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
+    WriteLn('  -v           Show version info and exit');
     WriteLn('  -q           Do not show progress');
     WriteLn('  -j JOBS      Specify number of games to run simultaneoulsly');
     WriteLn('  -o PGN_FILE  Write PGN of the games into PGN_FILE');
@@ -88,6 +90,9 @@ var
   RunnerProgress: TParallelRunnerProgress = nil;
 
   Param: integer = 1;
+
+{$R *.res}
+
 begin
   if ParamCount = 0 then
   begin
@@ -99,6 +104,14 @@ begin
     if ParamStr(Param) = '-h' then
     begin
       ShowHelp(True);
+      Halt(0);
+    end;
+    if ParamStr(Param) = '-v' then
+    begin
+      WriteLn('BattleField version ' + GetAppVersion);
+      WriteLn('Build time: ' + GetAppBuildTime);
+      WriteLn('Target: ' + GetAppTarget);
+      WriteLn('Compiler: FPC ' + FpcVersion);
       Halt(0);
     end;
     if ParamStr(Param) = '-q' then
