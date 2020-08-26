@@ -9,7 +9,8 @@ uses {$IFDEF UNIX}
   SysUtils,
   EngineRunner,
   ParallelRunner,
-  Progress;
+  Progress,
+  ScoreUtils;
 
   procedure ShowHelp(Banner: boolean = True);
   begin
@@ -41,14 +42,6 @@ uses {$IFDEF UNIX}
     halt(1);
   end;
 
-  function ScoreToStr(Score: integer): string;
-  begin
-    if Score mod 2 = 0 then
-      Result := IntToStr(Score div 2) + '.0'
-    else
-      Result := IntToStr(Score div 2) + '.5';
-  end;
-
 var
   FirstEngine: string = '';
   SecondEngine: string = '';
@@ -61,9 +54,7 @@ var
 
   Runner: TParallelRunner = nil;
   Stream: TFileStream = nil;
-  RunnerProgress: TProgress = nil;
-  FirstScore: integer = 0;
-  SecondScore: integer = 0;
+  RunnerProgress: TParallelRunnerProgress = nil;
 
   Param: integer = 1;
 begin
@@ -162,7 +153,7 @@ begin
 
   try
     if not Quiet then
-      RunnerProgress := TProgress.Create(Games);
+      RunnerProgress := TParallelRunnerProgress.Create(Games);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
       Options, Jobs, RunnerProgress);
     Runner.Join;
@@ -173,9 +164,8 @@ begin
     end;
     WriteLn('Wins: ', Runner.FirstWins, ', Loses: ', Runner.SecondWins,
       ', Draws: ', Runner.Draws);
-    FirstScore := Runner.FirstWins * 2 + Runner.Draws;
-    SecondScore := Runner.SecondWins * 2 + Runner.Draws;
-    WriteLn('Score: ', ScoreToStr(FirstScore), ':', ScoreToStr(SecondScore));
+    WriteLn('Score: ', ScorePairToStr(Runner.FirstWins, Runner.Draws,
+      Runner.SecondWins));
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);

@@ -1236,7 +1236,8 @@ begin
     // parsing PonderMove
     ChessBoard.MakeMove(FBestMove);
     Converter.RawBoard := ChessBoard.RawBoard;
-    FPonderMove := Converter.ParseMove(FPonderMoveStr);
+    if FPonderMoveStr <> '' then
+      FPonderMove := Converter.ParseMove(FPonderMoveStr);
   except
     // mute the exceptions
   end;

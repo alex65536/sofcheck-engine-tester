@@ -5,7 +5,7 @@ unit ParallelRunner;
 interface
 
 uses
-  Classes, SysUtils, EngineRunner, Progress;
+  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils;
 
 type
 
@@ -51,8 +51,22 @@ type
     FProgress: TAbstractProgress;
     FFirstFactory: TUciEngineFactory;
     FSecondFactory: TUciEngineFactory;
+    FGameResults: array [TEngineMatchWinner] of integer;
 
     procedure ThreadFunc(Index: integer);
+  end;
+
+  { TParallelRunnerProgress }
+
+  TParallelRunnerProgress = class(TAbstractProgress)
+  public
+    constructor Create(Total: integer);
+
+    procedure Step(Sender: TObject); override;
+  private
+    FStartTime: int64;
+    FTotal: integer;
+    FCount: integer;
   end;
 
 implementation
@@ -70,33 +84,45 @@ begin
   Result := 0;
 end;
 
+{ TParallelRunnerProgress }
+
+constructor TParallelRunnerProgress.Create(Total: integer);
+begin
+  FTotal := Total;
+  FStartTime := GetTickCount64;
+end;
+
+procedure TParallelRunnerProgress.Step(Sender: TObject);
+var
+  Time: double;
+  PredictedTime: double;
+  Runner: TParallelRunner;
+begin
+  Inc(FCount);
+  Time := (GetTickCount64 - FStartTime) / 1000;
+  PredictedTime := Time / FCount * FTotal;
+  Runner := Sender as TParallelRunner;
+  WriteLn(StdErr, Format(
+    '%d/%d games completed (%s/%s), score = %s',
+    [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
+     ScorePairToStr(Runner.FirstWins, Runner.Draws, Runner.SecondWins)]));
+end;
+
 { TParallelRunner }
 
 function TParallelRunner.GetDraws: integer;
-var
-  Runner: TEngineRunner;
 begin
-  Result := 0;
-  for Runner in FRunners do
-    Inc(Result, Runner.Draws);
+  Result := FGameResults[ewDraw];
 end;
 
 function TParallelRunner.GetFirstWins: integer;
-var
-  Runner: TEngineRunner;
 begin
-  Result := 0;
-  for Runner in FRunners do
-    Inc(Result, Runner.FirstWins);
+  Result := FGameResults[ewFirst];
 end;
 
 function TParallelRunner.GetSecondWins: integer;
-var
-  Runner: TEngineRunner;
 begin
-  Result := 0;
-  for Runner in FRunners do
-    Inc(Result, Runner.SecondWins);
+  Result := FGameResults[ewSecond];
 end;
 
 constructor TParallelRunner.Create(Games: integer;
@@ -104,6 +130,7 @@ constructor TParallelRunner.Create(Games: integer;
   Jobs: integer; Progress: TAbstractProgress);
 var
   I: integer;
+  Winner: TEngineMatchWinner;
   DataPtr: PThreadFuncData;
 begin
   if Jobs = 0 then
@@ -112,6 +139,8 @@ begin
   FOptions := Options;
   InitCriticalSection(FLock);
   FGames := Games;
+  for Winner in TEngineMatchWinner do
+    FGameResults[Winner] := 0;
   SetLength(FThreads, Jobs);
   SetLength(FRunners, Jobs);
   FFirstFactory := TUciEngineFactory.Create(FirstEngineExe);
@@ -183,6 +212,7 @@ procedure TParallelRunner.ThreadFunc(Index: integer);
 var
   MustStop: boolean;
   SwitchSides: boolean;
+  Winner: TEngineMatchWinner;
 begin
   while True do
   begin
@@ -201,11 +231,12 @@ begin
     if MustStop then
       break;
     try
-      FRunners[Index].Play(FOptions, SwitchSides);
+      Winner := FRunners[Index].Play(FOptions, SwitchSides);
       EnterCriticalSection(FLock);
       try
+        InterlockedIncrement(FGameResults[Winner]);
         if Assigned(FProgress) then
-          FProgress.Step;
+          FProgress.Step(Self);
       finally
         LeaveCriticalSection(FLock);
       end;
@@ -228,5 +259,4 @@ begin
 end;
 
 end.
-
 

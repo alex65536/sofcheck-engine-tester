@@ -9,6 +9,7 @@ uses
   gvector, PGNUtils, MoveConverters, NotationLists, OpeningBook;
 
 type
+  TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
 
   { RGame }
 
@@ -58,9 +59,6 @@ type
     FSecondEngine: TAbstractChessEngine;
     FFirstFactory: TEngineFactory;
     FSecondFactory: TEngineFactory;
-    FFirstWins: integer;
-    FSecondWins: integer;
-    FDraws: integer;
     FGames: TGameVector;
     FEngineResult: RAnalysisResult;
     FBook: TDefaultOpeningBook;
@@ -73,16 +71,13 @@ type
     constructor Create(FirstFactory, SecondFactory: TEngineFactory);
     destructor Destroy; override;
 
-    property FirstWins: integer read FFirstWins;
-    property SecondWins: integer read FSecondWins;
-    property Draws: integer read FDraws;
-
     function LastGame: RGame;
 
     property GameCount: integer read GetGameCount;
     property Games[I: integer]: RGame read GetGames;
 
-    procedure Play(const Options: REngineOptions; SwitchSides: boolean);
+    function Play(const Options: REngineOptions;
+      SwitchSides: boolean): TEngineMatchWinner;
 
     procedure BeforeDestruction; override;
   end;
@@ -155,9 +150,6 @@ begin
   FSecondFactory := SecondFactory;
   FFirstEngine := FirstFactory.CreateChessEngine;
   FSecondEngine := SecondFactory.CreateChessEngine;
-  FFirstWins := 0;
-  FSecondWins := 0;
-  FDraws := 0;
   FGames := TGameVector.Create;
   FBook := TDefaultOpeningBook.Create;
 end;
@@ -183,7 +175,8 @@ begin
   Result := FGames.Back;
 end;
 
-procedure TEngineRunner.Play(const Options: REngineOptions; SwitchSides: boolean);
+function TEngineRunner.Play(const Options: REngineOptions; SwitchSides: boolean
+  ): TEngineMatchWinner;
 var
   CurGame: RGame;
   Chain: TMoveChain;
@@ -280,14 +273,14 @@ begin
     end;
     case CurGame.Winner of
       gwWhite: if SwitchSides then
-          Inc(FSecondWins)
+          Result := ewSecond
         else
-          Inc(FFirstWins);
+          Result := ewFirst;
       gwBlack: if SwitchSides then
-          Inc(FFirstWins)
+          Result := ewFirst
         else
-          Inc(FSecondWins);
-      gwDraw: Inc(FDraws);
+          Result := ewSecond;
+      gwDraw: Result := ewDraw;
     end;
   except
     FreeAndNil(Chain);
