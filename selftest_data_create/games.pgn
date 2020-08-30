@@ -1,0 +1,161 @@
+[Event "Chess 256 Game"]
+[Site "Local computer"]
+[Date "2019.07.18"]
+[Round "-"]
+[White "Ifrit_m1_9_Beta_24_June_2012"]
+[Black "Ifrit_m1_9_Beta_24_June_2012"]
+[Result "1/2-1/2"]
+[TimeControl "10"]
+[SetUp "0"]
+
+1. Nc3 Nc6 2. Nf3 e6 3. e3 Nf6 4. Bd3 Bd6 5. O-O O-O 6. Nb5 Bc5 7. c3 Ng4 8. b4
+Bb6 9. Bb2 f5 10. Nbd4 Nce5 11. Nxe5 Nxe5 12. Qc2 Qh4 13. g3 Qh3 14. Be2 c5 15.
+Nb5 cxb4 16. cxb4 Ng4 17. Bxg4 Qxg4 18. a3 d5 19. Nd6 Rb8 20. f3 Qh5 21. a4 Bd7
+22. Qc3 Qg6 23. b5 Bd8 24. Qc2 b6 25. Be5 Bf6 26. f4 Bd8 27. d3 Ra8 28. Qb2 Be7
+29. a5 Rfd8 30. axb6 axb6 31. Nb7 Rxa1 32. Rxa1 Rc8 33. Nd6 Bxd6 34. Bxd6 Qh5
+35. Be5 Qe8 36. Ra6 Bxb5 37. Rxb6 Qh5 38. Qd2 Bc6 39. Rb1 Qf3 40. Qf2 Qxf2+ 41.
+Kxf2 Kf7 42. Ke1 g6 43. Rb2 Ke7 44. Rc2 Bd7 45. Rxc8 Bxc8 46. Kd2 Bd7 47. Kc3
+Ba4 48. Kd4 Bd1 49. Bg7 Bf3 50. Kc3 Kd6 51. Bf6 Kc5 52. Be7+ Kc6 53. Kd4 Kd7
+54. Bb4 Be2 55. Bc5 Kc6 56. Be7 Kd7 57. Bf6 Kc6 58. Be5 Bf3 59. Kc3 Kc5 60.
+Bd4+ Kc6 61. h3 Kb5 62. Be5 Kc5 63. Kd2 Bg2 64. h4 Bf3 65. Kc3 Be2 66. Kc2 Bf3
+67. Bd4+ Kd6 68. Kd2 Bg4 69. Kc3 Bd1 70. Kb4 Kc6 71. Be5 Bf3 72. Kc3 Kc5 73.
+Bd4+ Kc6 74. Kb3 Bd1+ 75. Kb2 Bf3 76. Kc3 h5 77. Be5 Kc5 78. Bd4+ Kc6 79. Kb3
+Bd1+ 80. Kb4 Be2 81. Kc3 Bf3 82. Bf6 Kc5 83. Be7+ Kb6 84. Kd4 Kc6 85. Bb4 Kb5
+86. Bd6 Kc6 87. Ke5 Kd7 88. Bb4 Be2 89. Kd4 Bf3 90. Ba3 Kc6 91. Be7 Kc7 92. Ke5
+Kd7 93. Bc5 Kc6 94. Bb4 Be2 95. d4 Kd7 96. Kf6 Bf3 97. Kxg6 Kc6 98. Kf6 Kd7 99.
+Ke5 Be4 100. Bc5 Bb1 101. Ba3 Bc2 102. Bd6 Bb1 103. Bc5 Bc2 104. Ba3 Bb1 105.
+Bb2 Bc2 106. Ba1 Bb1 107. Bc3 Bd3 108. Ba5 Ke7 109. Bb4+ Kd7 110. Kf6 Be4 111.
+Bc5 Bd3 112. Ba3 Be4 113. Bf8 Bc2 114. Ke5 Be4 115. Bg7 Bd3 116. Bh6 Be4 117.
+Bg5 Bd3 118. Kf6 Kd6 119. Kf7 Be4 120. Be7+ Kd7 121. Bb4 Bf3 122. Bc5 Be4 123.
+Kg6 Bf3 124. Kf6 Be4 125. Ba3 Bd3 126. Be7 Bb1 127. Bb4 Be4 128. Kg6 Bf3 129.
+Kg5 Kc6 130. Kf6 Kd7 131. Ke5 Be4 132. Ba5 Ke7 133. Be1 Kd7 134. Bd2 Bd3 135.
+Ba5 Ke7 136. Be1 Kd7 137. Bd2 Be4 138. Bc3 Ke7 139. Bb2 Bd3 140. Ba3+ Kd7 141.
+Bf8 Bc2 142. Bd6 Bd3 143. Bc5 Bc2 144. Kf6 Be4 145. Be7 Bc2 146. Bf8 Be4 147.
+Bc5 {Draw by 50 moves rule.} 1/2-1/2
+
+[Event "Chess 256 Game"]
+[Site "Local computer"]
+[Date "2019.07.18"]
+[Round "-"]
+[White "Fruit 2.1"]
+[Black "Fruit 2.1"]
+[Result "1/2-1/2"]
+[TimeControl "10"]
+[SetUp "0"]
+
+1. Nf3 Nc6 2. Nc3 Nf6 3. d4 d5 4. e3 e6 5. Bd3 Bd6 6. O-O O-O 7. e4 dxe4 8.
+Nxe4 Nxe4 9. Bxe4 Bd7 10. Re1 Qe7 11. d5 Na5 12. Bxh7+ Kxh7 13. Ng5+ Kg6 14.
+Qd3+ f5 15. Nxe6 Qh4 16. g3 Qg4 17. Bd2 b6 18. Nxf8+ Rxf8 19. b4 Nb7 20. f3 Qh5
+21. f4 Rh8 22. Re2 a5 23. a3 Kh7 24. Bc3 Ra8 25. Ree1 Kg8 26. Be5 Qf7 27. c4
+Qf8 28. Qb3 Qf7 29. Kh1 Re8 30. Ra2 c6 31. Qe3 cxd5 32. Qxb6 Bc8 33. c5 d4 34.
+Rg2 Bc7 35. Qb5 Nd8 36. c6 Re6 37. Rc2 Bxe5 38. Rxe5 Rxc6 39. Rxc6 Bd7 40. Rec5
+axb4 41. axb4 Qb3 42. Kg2 Nxc6 43. Rxc6 Qa2+ 44. Kh3 Qf7 45. Qb8+ Kh7 46. Rc7
+Qh5+ 47. Kg2 Qe2+ 48. Kg1 Bb5 49. h4 Qf1+ 50. Kh2 Qf2+ 51. Kh1 Bd3 52. Re7 Qxg3
+53. Qb7 Be4+ 54. Rxe4 Qf3+ 55. Kh2 fxe4 56. Qf7 Qg4 57. Qd5 Qxh4+ 58. Kg2 Qg4+
+59. Kh1 e3 60. Qe4+ Kh6 61. Qc6+ Qg6 62. Qf3 Qb1+ 63. Kg2 Qxb4 64. Qh3+ Kg6 65.
+Qg4+ Kf7 66. Qf5+ Ke7 67. Qe5+ Kf8 68. Qf5+ Ke8 69. Qe5+ Kd8 70. Qxg7 Qd2+ 71.
+Kf3 Qd1+ 72. Ke4 e2 73. Qg5+ Kc7 74. Qc5+ Kd7 75. Qd5+ Ke7 76. Qe5+ Kf7 77.
+Qd5+ Kf8 78. Qd8+ Kg7 79. Qg5+ Kh7 80. Qe7+ Kg8 81. Qd8+ Kg7 82. Qg5+ Kh8 83.
+Qd8+ Kg7 {Draw by repetitions.} 1/2-1/2
+
+[Event "Chess 256 Game"]
+[Site "Local computer"]
+[Date "2019.07.18"]
+[Round "-"]
+[White "Fruit 2.1"]
+[Black "Stockfish 9 64"]
+[Result "1/2-1/2"]
+[TimeControl "60|3"]
+[SetUp "0"]
+
+1. Nf3 Nf6 2. d4 d5 3. c4 e6 4. cxd5 exd5 5. Nc3 Bd6 6. Bg5 c6 7. e3 h6 8. Bh4
+Bf5 9. Bd3 Bxd3 10. Qxd3 Nbd7 11. O-O g5 12. Bg3 Bxg3 13. hxg3 O-O 14. Rac1 Re8
+15. Qf5 Qe7 16. Rfd1 Rad8 17. Qc2 Ng4 18. Rd2 Ndf6 19. Qb3 Ne4 20. Nxe4 dxe4
+21. Nh2 Nf6 22. g4 Rd5 23. Qa4 a6 24. Qb3 Rb5 25. Qc4 Rd5 26. Qb3 Rb5 27. Qc4
+Qe6 28. Qxe6 Rxe6 29. Re2 Rd5 30. Rec2 Kg7 31. Kf1 Ra5 32. a3 Re8 33. Rc5 Rb5
+34. Rxb5 axb5 35. Ke1 Kg6 36. Ke2 Rh8 37. Rc5 Ra8 38. f3 exf3+ 39. gxf3 Nd5 40.
+e4 Nf4+ 41. Ke3 Rd8 42. Rc2 h5 43. gxh5+ Nxh5 44. Ng4 Nf4 45. Ne5+ Kf6 46. Rh2
+Ne6 47. Rd2 Nf4 48. Nd3 Ne6 49. Nb4 Nf4 50. Rh2 Kg7 51. Rh1 f5 52. Rh2 Re8 53.
+Rc2 Kh6 54. Rd2 Kg6 55. d5 c5 56. Nc2 Kf6 57. Ne1 Rd8 58. Rh2 Re8 59. Rh6+ Kg7
+60. Rd6 Kf7 61. Nd3 Nxd3 62. Kxd3 g4 63. fxg4 fxg4 64. Rd7+ Kf6 65. Ke3 g3 66.
+Rd6+ Kf7 67. Kf3 g2 68. Kxg2 Rxe4 69. Kf3 Ke7 70. Rb6 Re5 71. Rxb5 Kd6 72. Rxb7
+Kxd5 73. Rh7 Kc4 74. Rh2 Kb3 75. Rd2 c4 76. Kf4 Re1 77. a4 Kxa4 78. Rd8 Re2 79.
+Rb8 Re7 80. Rd8 Kb3 81. Rb8+ Kc2 82. Rc8 Kb3 83. Rb8+ Kc2 84. Rc8 Kb3 85. Rb8+
+{Draw by repetitions.} 1/2-1/2
+
+[Event "Chess 256 Game"]
+[Site "Local computer"]
+[Date "2019.07.18"]
+[Round "-"]
+[White "Fruit 2.1"]
+[Black "Fruit 2.1"]
+[Result "1-0"]
+[TimeControl "5"]
+[SetUp "0"]
+
+1. Nc3 Nf6 2. d4 d5 3. Bf4 Bf5 4. Nf3 e6 5. e3 Bb4 6. Bb5+ c6 7. Bd3 O-O 8. O-O
+Nbd7 9. Rb1 Qe7 10. h3 Rfe8 11. a3 Bd6 12. Bxd6 Qxd6 13. Qd2 Rac8 14. Rbd1 h6
+15. Rfe1 Bxd3 16. Qxd3 c5 17. e4 Qb6 18. exd5 c4 19. Qd2 exd5 20. Ne5 Qxb2 21.
+Nxd7 Nxd7 22. a4 Nf6 23. Rxe8+ Rxe8 24. Rb1 Ne4 25. Rxb2 Nxd2 26. f3 b6 27. Kf2
+Kh7 28. a5 bxa5 29. Rb7 a6 30. Rxf7 a4 31. Ra7 Re6 32. Nxa4 Rf6 33. Ke2 Nb1 34.
+Rd7 Na3 35. c3 Re6+ 36. Kf2 Nc2 37. Rxd5 Ne1 38. g4 Nd3+ 39. Kg3 g5 40. h4 Kg6
+41. Nc5 gxh4+ 42. Kxh4 Nxc5 43. f4 Re3 44. dxc5 Rd3 45. Rd6+ Kf7 46. Rxh6 Rxc3
+47. c6 Ke7 48. Rh7+ Kd8 49. g5 Rc1 50. g6 c3 51. g7 Rh1+ 52. Kg5 Rg1+ 53. Kf6
+c2 54. c7+ Kc8 55. Rh1 c1=Q 56. g8=Q+ Rxg8 57. Rxc1 Rf8+ 58. Ke5 Re8+ 59. Kd6
+Rf8 60. Re1 a5 61. f5 a4 62. Re4 a3 63. Ra4 Rf6+ 64. Ke5 Rc6 65. Rxa3 Rxc7 66.
+Kd6 Rd7+ 67. Ke6 Rd2 68. f6 Re2+ 69. Kd5 Rd2+ 70. Kc6 Rc2+ 71. Kd6 Rd2+ 72. Ke7
+Re2+ 73. Kf8 Kc7 74. f7 Kd7 75. Rg3 Rf2 76. Kg7 Ke6 77. f8=Q Rxf8 78. Kxf8 Ke5
+79. Ke7 Kf4 80. Ra3 Ke5 81. Ra5+ Kd4 82. Kd6 Ke4 83. Ra4+ Kf5 84. Kd5 Kf6 85.
+Rf4+ Kg6 86. Ke4 Kg5 87. Ke5 Kg6 88. Rg4+ Kf7 89. Rg3 Ke7 90. Rg7+ Kf8 91. Rd7
+Ke8 92. Ke6 Kf8 93. Kf6 Kg8 94. Rd8+ Kh7 95. Re8 Kh6 96. Rh8# {White
+checkmates.} 1-0
+
+[Event "Hoogovens-99"]
+[Site "Wijk aan Zee (NED)"]
+[Date "28.01.1999"]
+[Round "10"]
+[White "Yermolinsky,A"]
+[Black "Kasimdzhanov,R"]
+[Result "1/2-1/2"]
+[ECO "E71"]
+[WhiteElo "2597"]
+[BlackElo "2595"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. h3 O-O 6. Bg5 Na6 7. Bd3 e5 8. d5
+c6 9. Nge2 cxd5 10. cxd5 Nc5 11. Bc2 a5 12. O-O Bd7 13. a3 a4 14. Qd2 Qb6
+15. Rab1 Rfc8 16. Kh1 Be8 17. Ng3 Nfd7 18. Bh6 Qd8 19. Bg5 Qb6 20. Bh6 Qd8
+21. Bg5 Bf6 22. Be3 Nb6 23. Qe2 Bg5 24. Nd1 Bf4 25. Re1 Qh4 26. Nf1 Bxe3
+27. Qxe3 Nc4 28. Qe2 Na5 29. Nd2 Rab8 30. Nc3 Bd7 31. Rf1 b5 32. Na2 Rc7
+33. Nb4 Rbc8 34. Kg1 Qg5 35. Qe3 Qxe3 36. fxe3 Na6 37. Bd3 Nxb4 38. axb4
+Nc4 39. Bxc4 bxc4 40. Rfc1 Rb7 41. Rxc4 Rxc4 42. Nxc4 Rxb4 43. Rc1 f6 44.
+Rc2 Kf8 45. Nxd6 Ke7 46. Nc4 Bb5 47. Nd2 f5 48. exf5 gxf5 49. g4 fxg4 50.
+hxg4 Rxg4+ 51. Kf2 Rb4 52. e4 Kd6 53. Ke3 h5 54. Nf3 Bd7 55. Nd2 Bb5 56.
+Nf3 Be8 57. Nd2 Ke7 58. Nc4 Bg6 59. d6+ Kd8 60. Rc3 h4 61. Kf3 h3 62. Kg3
+Bxe4 63. Kxh3 Kd7 64. Kg3 Ke6 65. d7 Kxd7 66. Nxe5+ Kd6 67. Rc4 Rxc4 68.
+Nxc4+ Kc5 69. Nd2 Kd4 70. Kf2 Bc2 1/2-1/2
+
+[Event "Ch World (match)"]
+[Site "Moscow (Russia)"]
+[Date "1984.??.??"]
+[Round "15"]
+[White "Karpov, Anatoly"]
+[Black "Kasparov, Gary"]
+[Result "1/2-1/2"]
+[ECO "E15"]
+
+1. Nf3 Nf6 2. c4 b6 3. d4 e6 4. g3 Ba6 5. b3 Bb4 6. Bd2 Be7 7. Bg2 O-O 
+8. O-O d5 9. cxd5 Nxd5 10. Nc3 Nd7 11. Nxd5 exd5 12. Rc1 Re8 13. Rc2 c5 
+14. Re1 Bb7 15. Be3 a5 16. Qc1 a4 17. Rd1 axb3 18. axb3 Bf6 19. Ne1 h6 
+20. Bf3 Qe7 21. Qd2 Ra3 22. Rb1 Rd8 23. dxc5 Nxc5 24. Qb4 d4 25. Bxd4 
+Rxb3 26. Rxb3 Rxd4 27. Qxb6 Nxb3 28. Rc7 Rd7 29. Rxb7 Rxb7 30. Qxb7 Nd4 
+31. Kf1 Qxb7 32. Bxb7 Nf5 33. Nd3 Bc3 34. e3 g5 35. g4 Nd6 36. Bf3 Kg7 
+37. Ke2 Kf6 38. h3 Ke7 39. Bd5 Kf6 40. Nc5 Ke7 41. Na4 Ba5 42. Nc5 Bb6 
+43. Na6 Ba5 44. Nb8 Bc3 45. Nc6 Kd7 46. Kd3 Be1 47. Ne5 Ke7 48. Ke2 Bc3 
+49. Nf3 Ba5 50. Bb3 Bb6 51. Ne5 Bc5 52. Kd3 Bb6 53. Bd5 Bc5 54. Kc3 Ke8 
+55. Kb3 Ke7 56. Ka4 Bb6 57. Kb4 Ke8 58. Nc6 Kd7 59. Kc3 Ke8 60. Kd3 Bc5 
+61. Ke2 Kf8 62. Kf3 Ba3 63. Bb3 Bc5 64. Ne5 Ke7 65. Nd3 Bb6 66. Nb4 Bc5 
+67. Nd5 Kf8 68. Bc2 Ba7 69. h4 Kg7 70. h5 Bc5 71. Ke2 Nc4 72. Bf5 Nb6 
+73. Nc3 Bb4 74. Nb5 Kf6 75. Bc2 Nc4 76. Nd4 Bc5 77. Nf5 Nd6 78. Ng3 Ke5 
+79. Nf1 Bb4 80. Nh2 Kf6 81. Bb3 Bc5 82. Nf3 Bb6 83. Kd3 Bc5 84. Bc2 Ke6 
+85. Ng1 Ke5 86. Ne2 Bb6 87. Bb3 Bc5 88. Nc3 Kf6 89. Nd5 Ke6 90. f4 gxf4 
+91. g5 fxe3 92. gxh6 e2 93. Nf4 Ke7 1/2-1/2
