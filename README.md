@@ -5,6 +5,7 @@ These utilities include:
 - [Data extractor from PGNs](#data-extractor-from-pgns)
 - [Position cost tester](#position-cost-tester)
 - [Battlefield](#battlefield)
+- [Data generator for selftests](#data-generator-for-selftests)
 
 This project is mostly written in Pascal, as it relies on core libraries of
 [Chess 256](https://github.com/alex65536/Chess256). These libraries were taken from the source
@@ -67,6 +68,22 @@ Alternatively, you can open and build the project `battlefield/Battlefield.lpi` 
 
 The resulting binary is located in `battlefield/bin/battlefield`. Run the binary without arguments
 to get more information on how to use it.
+
+### Data generator for selftests
+
+This small tool generates the positions for
+[self-tests](https://github.com/alex65536/sofcheck/tree/master/selftest). To compile and run it,
+use
+
+~~~~~
+$ cd selftest_data_create
+$ lazbuild SelftestDataCreate.lpi
+$ cd bin
+$ ./selftest_data_create >boards.fen
+~~~~~
+
+The resulting `boards.fen` will be the same as `boards.fen` which is used for self-tests in
+SoFCheck repository.
 
 # License
 
