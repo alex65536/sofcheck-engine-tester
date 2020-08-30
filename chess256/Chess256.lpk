@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="Chess256"/>
+    <Author Value="Alexander Kernozhitsky"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <Optimizations>
+          <OptimizationLevel Value="2"/>
+        </Optimizations>
+      </CodeGeneration>
+    </CompilerOptions>
+    <Description Value="Chess library. The sources are taken from Chess256 project and slightly adapted. This library supports FEN to save and load boards, PGN to save and load games, and UCI to communicate with chess engines."/>
+    <License Value="GPL 3+"/>
+    <Version Minor="13" Release="4"/>
+    <Files Count="20">
+      <Item1>
+        <Filename Value="BoardHashes.pas"/>
+        <UnitName Value="BoardHashes"/>
+      </Item1>
+      <Item2>
+        <Filename Value="ChessEngines.pas"/>
+        <UnitName Value="ChessEngines"/>
+      </Item2>
+      <Item3>
+        <Filename Value="ChessNotation.pas"/>
+        <UnitName Value="ChessNotation"/>
+      </Item3>
+      <Item4>
+        <Filename Value="ChessRules.pas"/>
+        <UnitName Value="ChessRules"/>
+      </Item4>
+      <Item5>
+        <Filename Value="ChessStrings.pas"/>
+        <UnitName Value="ChessStrings"/>
+      </Item5>
+      <Item6>
+        <Filename Value="ChessTime.pas"/>
+        <UnitName Value="ChessTime"/>
+      </Item6>
+      <Item7>
+        <Filename Value="ChessUtils.pas"/>
+        <UnitName Value="ChessUtils"/>
+      </Item7>
+      <Item8>
+        <Filename Value="CompilerDirectives.inc"/>
+        <Type Value="Include"/>
+      </Item8>
+      <Item9>
+        <Filename Value="EngineProcesses.pas"/>
+        <UnitName Value="EngineProcesses"/>
+      </Item9>
+      <Item10>
+        <Filename Value="EngineScores.pas"/>
+        <UnitName Value="EngineScores"/>
+      </Item10>
+      <Item11>
+        <Filename Value="MoveChains.pas"/>
+        <UnitName Value="MoveChains"/>
+      </Item11>
+      <Item12>
+        <Filename Value="MoveConverters.pas"/>
+        <UnitName Value="MoveConverters"/>
+      </Item12>
+      <Item13>
+        <Filename Value="NotationLists.pas"/>
+        <UnitName Value="NotationLists"/>
+      </Item13>
+      <Item14>
+        <Filename Value="NotationMessaging.pas"/>
+        <UnitName Value="NotationMessaging"/>
+      </Item14>
+      <Item15>
+        <Filename Value="NotationTags.pas"/>
+        <UnitName Value="NotationTags"/>
+      </Item15>
+      <Item16>
+        <Filename Value="NotationUtils.pas"/>
+        <UnitName Value="NotationUtils"/>
+      </Item16>
+      <Item17>
+        <Filename Value="PGNParser.inc"/>
+        <Type Value="Include"/>
+      </Item17>
+      <Item18>
+        <Filename Value="PGNUtils.pas"/>
+        <UnitName Value="PGNUtils"/>
+      </Item18>
+      <Item19>
+        <Filename Value="UCICommands.pas"/>
+        <UnitName Value="UCICommands"/>
+      </Item19>
+      <Item20>
+        <Filename Value="UCIMsgProcessor.inc"/>
+        <Type Value="Include"/>
+      </Item20>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LazUtils"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
