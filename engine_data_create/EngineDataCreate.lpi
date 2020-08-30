@@ -39,91 +39,91 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="PGNSplitter.pas"/>
+        <Filename Value="../chess256/BoardHashes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../chess256/BoardHashes.pas"/>
+        <Filename Value="../chess256/ChessEngines.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../chess256/ChessEngines.pas"/>
+        <Filename Value="../chess256/ChessNotation.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../chess256/ChessNotation.pas"/>
+        <Filename Value="../chess256/ChessRules.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="../chess256/ChessRules.pas"/>
+        <Filename Value="../chess256/ChessStrings.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="../chess256/ChessStrings.pas"/>
+        <Filename Value="../chess256/ChessTime.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="../chess256/ChessTime.pas"/>
+        <Filename Value="../chess256/ChessUtils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="../chess256/ChessUtils.pas"/>
+        <Filename Value="../chess256/CompilerDirectives.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="../chess256/CompilerDirectives.inc"/>
+        <Filename Value="../chess256/EngineProcesses.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="../chess256/EngineProcesses.pas"/>
+        <Filename Value="../chess256/EngineScores.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="../chess256/EngineScores.pas"/>
+        <Filename Value="../chess256/MoveChains.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>
-        <Filename Value="../chess256/MoveChains.pas"/>
+        <Filename Value="../chess256/MoveConverters.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="../chess256/MoveConverters.pas"/>
+        <Filename Value="../chess256/NotationLists.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="../chess256/NotationLists.pas"/>
+        <Filename Value="../chess256/NotationMessaging.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
       <Unit15>
-        <Filename Value="../chess256/NotationMessaging.pas"/>
+        <Filename Value="../chess256/NotationTags.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="../chess256/NotationTags.pas"/>
+        <Filename Value="../chess256/NotationUtils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit16>
       <Unit17>
-        <Filename Value="../chess256/NotationUtils.pas"/>
+        <Filename Value="../chess256/PGNParser.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
       <Unit18>
-        <Filename Value="../chess256/PGNParser.inc"/>
+        <Filename Value="../chess256/PGNUtils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit18>
       <Unit19>
-        <Filename Value="../chess256/PGNUtils.pas"/>
+        <Filename Value="../chess256/UCICommands.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit19>
       <Unit20>
-        <Filename Value="../chess256/UCICommands.pas"/>
+        <Filename Value="../chess256/UCIMsgProcessor.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit20>
       <Unit21>
-        <Filename Value="../chess256/UCIMsgProcessor.inc"/>
+        <Filename Value="../common/Utils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit21>
       <Unit22>
-        <Filename Value="../common/Utils.pas"/>
+        <Filename Value="../common/PGNSplitter.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit22>
     </Units>
