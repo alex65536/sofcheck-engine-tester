@@ -199,7 +199,7 @@ begin
     if not Quiet then
       RunnerProgress := TParallelRunnerProgress.Create(Games);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
-      Options, Jobs, RunnerProgress);
+      Options, Jobs, nil, RunnerProgress);
     Runner.Join;
     if PgnFile <> '' then
     begin

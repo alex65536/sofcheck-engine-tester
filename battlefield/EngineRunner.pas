@@ -61,14 +61,15 @@ type
     FSecondFactory: TEngineFactory;
     FGames: TGameVector;
     FEngineResult: RAnalysisResult;
-    FBook: TDefaultOpeningBook;
+    FBook: TAbstractOpeningBook;
 
     procedure EngineStop(Sender: TObject; const EngineResult: RAnalysisResult);
 
     function GetGames(I: integer): RGame;
     function GetGameCount: integer;
   public
-    constructor Create(FirstFactory, SecondFactory: TEngineFactory);
+    constructor Create(FirstFactory, SecondFactory: TEngineFactory;
+      Book: TAbstractOpeningBook);
     destructor Destroy; override;
 
     function LastGame: RGame;
@@ -144,14 +145,15 @@ begin
   Result := FGames.Size;
 end;
 
-constructor TEngineRunner.Create(FirstFactory, SecondFactory: TEngineFactory);
+constructor TEngineRunner.Create(FirstFactory, SecondFactory: TEngineFactory;
+  Book: TAbstractOpeningBook);
 begin
+  FBook := Book;
   FFirstFactory := FirstFactory;
   FSecondFactory := SecondFactory;
   FFirstEngine := FirstFactory.CreateChessEngine;
   FSecondEngine := SecondFactory.CreateChessEngine;
   FGames := TGameVector.Create;
-  FBook := TDefaultOpeningBook.Create;
 end;
 
 destructor TEngineRunner.Destroy;

@@ -8,20 +8,41 @@ uses
   Classes, SysUtils, MoveChains, Utils;
 
 type
+
+  { TAbstractOpeningBook }
+
   TAbstractOpeningBook = class
   public
+    constructor Create; virtual;
     procedure FillOpening(Chain: TMoveChain); virtual; abstract;
+    procedure Assign(Source: TAbstractOpeningBook);
+    function Clone: TAbstractOpeningBook;
+  protected
+    procedure DoAssign(Source: TAbstractOpeningBook); virtual;
+  end;
+
+  { TRandomizedOpeningBook }
+
+  TRandomizedOpeningBook = class(TAbstractOpeningBook)
+  public
+    constructor Create; override;
+  protected
+    function RandInt(Bound: QWord): QWord;
+  private
+    FRandomState: RXoshiro256State;
   end;
 
   { TDefaultOpeningBook }
 
-  TDefaultOpeningBook = class(TAbstractOpeningBook)
+  TDefaultOpeningBook = class(TRandomizedOpeningBook)
   public
     procedure FillOpening(Chain: TMoveChain); override;
-    constructor Create;
+    constructor Create; override;
+    constructor CreateDefault;
     destructor Destroy; override;
+  protected
+    procedure DoAssign(Source: TAbstractOpeningBook); override;
   private
-    FRandomState: RXoshiro256State;
     FOpenings: array of TMoveChain;
   end;
 
@@ -32,15 +53,64 @@ uses
 
 {$I Openings.inc}
 
+type
+  TOpeningBookClass = class of TAbstractOpeningBook;
+
+{ TAbstractOpeningBook }
+
+constructor TAbstractOpeningBook.Create;
+begin
+end;
+
+procedure TAbstractOpeningBook.Assign(Source: TAbstractOpeningBook);
+begin
+  if Source.ClassType <> ClassType then
+    raise EConvertError.CreateFmt('Cannot assign %s to %s',
+      [Source.ClassName, ClassName]);
+  DoAssign(Source);
+end;
+
+function TAbstractOpeningBook.Clone: TAbstractOpeningBook;
+begin
+  Result := TOpeningBookClass(Self.ClassType).Create;
+  try
+    Result.Assign(Self);
+  except
+    FreeAndNil(Result);
+    raise;
+  end;
+end;
+
+procedure TAbstractOpeningBook.DoAssign(Source: TAbstractOpeningBook);
+begin
+end;
+
+{ TRandomizedOpeningBook }
+
+constructor TRandomizedOpeningBook.Create;
+begin
+  FRandomState := InitXoshiro256State;
+end;
+
+function TRandomizedOpeningBook.RandInt(Bound: QWord): QWord;
+begin
+  Result := Xoshiro256ss(FRandomState) mod Bound;
+end;
+
 { TDefaultOpeningBook }
 
 constructor TDefaultOpeningBook.Create;
+begin
+  inherited;
+end;
+
+constructor TDefaultOpeningBook.CreateDefault;
 var
   I: integer;
   Board: TChessBoard = nil;
   Notation: TChessNotation = nil;
 begin
-  FRandomState := InitXoshiro256State;
+  inherited;
   try
     Board := TChessBoard.Create(False);
     Notation := TChessNotation.Create(Board);
@@ -57,11 +127,8 @@ begin
 end;
 
 procedure TDefaultOpeningBook.FillOpening(Chain: TMoveChain);
-var
-  Index: integer;
 begin
-  Index := Xoshiro256ss(FRandomState) mod QWord(Length(FOpenings));
-  Chain.Assign(FOpenings[Index]);
+  Chain.Assign(FOpenings[RandInt(Length(FOpenings))]);
 end;
 
 destructor TDefaultOpeningBook.Destroy;
@@ -73,5 +140,21 @@ begin
   inherited;
 end;
 
-end.
+procedure TDefaultOpeningBook.DoAssign(Source: TAbstractOpeningBook);
+var
+  Openings: array of TMoveChain;
+  I: integer;
+begin
+  inherited;
+  for I := Low(FOpenings) to High(FOpenings) do
+    FreeAndNil(FOpenings[I]);
+  Openings := (Source as TDefaultOpeningBook).FOpenings;
+  SetLength(FOpenings, Length(Openings));
+  for I := Low(FOpenings) to High(FOpenings) do
+  begin
+    FOpenings[I] := TMoveChain.Create;
+    FOpenings[I].Assign(Openings[I]);
+  end;
+end;
 
+end.

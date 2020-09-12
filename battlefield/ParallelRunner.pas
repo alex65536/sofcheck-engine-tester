@@ -5,7 +5,7 @@ unit ParallelRunner;
 interface
 
 uses
-  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils;
+  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils, OpeningBook;
 
 type
 
@@ -19,7 +19,8 @@ type
   public
     constructor Create(Games: integer;
       const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-      Jobs: integer = 0; Progress: TAbstractProgress = nil);
+      Jobs: integer = 0; Book: TAbstractOpeningBook = nil;
+      Progress: TAbstractProgress = nil);
 
     procedure Join;
 
@@ -52,6 +53,7 @@ type
     FFirstFactory: TUciEngineFactory;
     FSecondFactory: TUciEngineFactory;
     FGameResults: array [TEngineMatchWinner] of integer;
+    FBook: TAbstractOpeningBook;
 
     procedure ThreadFunc(Index: integer);
   end;
@@ -102,10 +104,9 @@ begin
   Time := (GetTickCount64 - FStartTime) / 1000;
   PredictedTime := Time / FCount * FTotal;
   Runner := Sender as TParallelRunner;
-  WriteLn(StdErr, Format(
-    '%d/%d games completed (%s/%s), score = %s',
+  WriteLn(StdErr, Format('%d/%d games completed (%s/%s), score = %s',
     [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
-     ScorePairToStr(Runner.FirstWins, Runner.Draws, Runner.SecondWins)]));
+    ScorePairToStr(Runner.FirstWins, Runner.Draws, Runner.SecondWins)]));
 end;
 
 { TParallelRunner }
@@ -127,7 +128,7 @@ end;
 
 constructor TParallelRunner.Create(Games: integer;
   const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-  Jobs: integer; Progress: TAbstractProgress);
+  Jobs: integer; Book: TAbstractOpeningBook; Progress: TAbstractProgress);
 var
   I: integer;
   Winner: TEngineMatchWinner;
@@ -135,6 +136,9 @@ var
 begin
   if Jobs = 0 then
     Jobs := GetSystemThreadCount;
+  FBook := Book;
+  if FBook = nil then
+    FBook := TDefaultOpeningBook.CreateDefault;
   FProgress := Progress;
   FOptions := Options;
   InitCriticalSection(FLock);
@@ -151,7 +155,7 @@ begin
     FRunners[I] := nil;
   end;
   for I := 0 to Jobs - 1 do
-    FRunners[I] := TEngineRunner.Create(FFirstFactory, FSecondFactory);
+    FRunners[I] := TEngineRunner.Create(FFirstFactory, FSecondFactory, FBook.Clone);
   for I := 0 to Jobs - 1 do
   begin
     if not Assigned(FRunners[I]) then
@@ -161,6 +165,7 @@ begin
     DataPtr^.Index := I;
     FThreads[I] := BeginThread(@StaticThreadFunc, DataPtr);
   end;
+  FreeAndNil(FBook);
 end;
 
 procedure TParallelRunner.Join;
@@ -205,6 +210,7 @@ begin
     Runner.Free;
   FreeAndNil(FFirstFactory);
   FreeAndNil(FSecondFactory);
+  FreeAndNil(FBook);
   inherited Destroy;
 end;
 
