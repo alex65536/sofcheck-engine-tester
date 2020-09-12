@@ -12,6 +12,7 @@ uses {$IFDEF UNIX}
   Progress,
   ScoreUtils,
   RichTextConsole,
+  OpeningBook,
   VersionInfo;
 
   procedure ShowHelp(Banner: boolean = True);
@@ -23,7 +24,7 @@ uses {$IFDEF UNIX}
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
     WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
-    WriteLn('                   [-d DEPTH] [-t TIMES] ENGINE1 ENGINE2');
+    WriteLn('                   [-d DEPTH] [-t TIMES] [-f FEN_FILE] ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
     WriteLn('  -v           Show version info and exit');
@@ -35,6 +36,9 @@ uses {$IFDEF UNIX}
     WriteLn('               or -t');
     WriteLn('  -t TIME      Run engines on fixed time (in milliseconds) per move.');
     WriteLn('               You must specify either -d or -t');
+    WriteLn('  -f FEN_FILE  Start games from positions found in FEN_FILE. By');
+    WriteLn('               default, the games are started from positions in the');
+    WriteLn('               built-in opening book');
   end;
 
   procedure ShowError(const Error: string);
@@ -79,6 +83,7 @@ var
   FirstEngine: string = '';
   SecondEngine: string = '';
   PgnFile: string = '';
+  FenFile: string = '';
   Options: REngineOptions;
   HasOptions: boolean = False;
   Games: integer = 0;
@@ -88,6 +93,8 @@ var
   Runner: TParallelRunner = nil;
   Stream: TFileStream = nil;
   RunnerProgress: TParallelRunnerProgress = nil;
+
+  Book: TAbstractOpeningBook = nil;
 
   Param: integer = 1;
 
@@ -170,6 +177,14 @@ begin
       Inc(Param, 2);
       continue;
     end;
+    if ParamStr(Param) = '-f' then
+    begin
+      if Param = ParamCount then
+        ShowError('FEN_FILE expected');
+      FenFile := ParamStr(Param + 1);
+      Inc(Param, 2);
+      continue;
+    end;
     if ParamStr(Param).StartsWith('-') then
       ShowError('Unknown flag ' + ParamStr(Param));
     if FirstEngine = '' then
@@ -198,8 +213,10 @@ begin
   try
     if not Quiet then
       RunnerProgress := TParallelRunnerProgress.Create(Games);
+    if FenFile <> '' then
+      Book := TFenListOpeningBook.Create(FenFile);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
-      Options, Jobs, nil, RunnerProgress);
+      Options, Jobs, Book, RunnerProgress);
     Runner.Join;
     if PgnFile <> '' then
     begin

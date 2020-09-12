@@ -5,7 +5,7 @@ unit OpeningBook;
 interface
 
 uses
-  Classes, SysUtils, MoveChains, Utils;
+  Classes, SysUtils, MoveChains, Utils, ChessRules;
 
 type
 
@@ -46,15 +46,78 @@ type
     FOpenings: array of TMoveChain;
   end;
 
+  { TFenListOpeningBook }
+
+  TFenListOpeningBook = class(TRandomizedOpeningBook)
+  public
+    procedure FillOpening(Chain: TMoveChain); override;
+    constructor Create; override;
+    constructor Create(const FileName: string);
+    constructor Create(FenStrings: TStringList);
+  protected
+    procedure DoAssign(Source: TAbstractOpeningBook); override;
+  private
+    FBoards: array of RRawBoard;
+  end;
+
 implementation
 
 uses
-  ChessRules, ChessNotation;
+  ChessNotation;
 
 {$I Openings.inc}
 
 type
   TOpeningBookClass = class of TAbstractOpeningBook;
+
+{ TFenListOpeningBook }
+
+procedure TFenListOpeningBook.FillOpening(Chain: TMoveChain);
+begin
+  Chain.Clear(FBoards[RandInt(Length(FBoards))]);
+end;
+
+constructor TFenListOpeningBook.Create;
+begin
+  inherited Create;
+end;
+
+constructor TFenListOpeningBook.Create(const FileName: string);
+var
+  List: TStringList;
+begin
+  List := TStringList.Create;
+  try
+    List.LoadFromFile(FileName);
+    Create(List);
+  finally
+    FreeAndNil(List);
+  end;
+end;
+
+constructor TFenListOpeningBook.Create(FenStrings: TStringList);
+var
+  I: integer;
+  Board: TChessBoard;
+begin
+  SetLength(FBoards, FenStrings.Count);
+  Board := TChessBoard.Create(false);
+  try
+    for I := 0 to FenStrings.Count - 1 do
+    begin
+      Board.FENString := FenStrings[I];
+      FBoards[I] := Board.RawBoard;
+    end;
+  finally
+    FreeAndNil(Board);
+  end;
+end;
+
+procedure TFenListOpeningBook.DoAssign(Source: TAbstractOpeningBook);
+begin
+  inherited;
+  FBoards := (Source as TFenListOpeningBook).FBoards;
+end;
 
 { TAbstractOpeningBook }
 

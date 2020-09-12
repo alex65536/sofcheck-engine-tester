@@ -115,13 +115,26 @@ end;
 function RGame.ToString: string;
 var
   Converter: TPGNMoveConverter;
+  Board: TChessBoard;
 begin
   Converter := TPGNMoveConverter.Create;
   try
     Result := '[White "' + StringToTagValue(WhiteName) + '"]' +
-      LineEnding + '[Black "' + StringToTagValue(BlackName) + '"]' +
-      LineEnding + LineEnding + Chain.ConvertToString(Converter, ' ') +
-      ' ' + GameResultMeanings[Winner] + LineEnding;
+      LineEnding + '[Black "' + StringToTagValue(BlackName) + '"]';
+    if Chain.Boards[-1] <> GetInitialPosition then
+    begin
+      Board := TChessBoard.Create(False);
+      try
+        Board.RawBoard := Chain.Boards[-1];
+        Result := Result + LineEnding + '[SetUp "1"]' + LineEnding +
+          '[FEN "' + Board.FENString + '"]';
+      finally
+        FreeAndNil(Board);
+      end;
+    end;
+    Result := Result + LineEnding + LineEnding +
+      Chain.ConvertToString(Converter, ' ') + ' ' + GameResultMeanings[Winner] +
+      LineEnding;
   finally
     FreeAndNil(Converter);
   end;
@@ -177,8 +190,8 @@ begin
   Result := FGames.Back;
 end;
 
-function TEngineRunner.Play(const Options: REngineOptions; SwitchSides: boolean
-  ): TEngineMatchWinner;
+function TEngineRunner.Play(const Options: REngineOptions;
+  SwitchSides: boolean): TEngineMatchWinner;
 var
   CurGame: RGame;
   Chain: TMoveChain;
