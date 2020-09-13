@@ -159,6 +159,7 @@ type
     property OnAnalysisMessage: TAnalysisMessageEvent
       read FOnAnalysisMessage write FOnAnalysisMessage;
     // Methods
+    procedure NewGame; virtual;
     procedure StartInfinite; virtual;
     procedure StartFixedTime(TimeMsec: int64); virtual; 
     procedure StartFixedDepth(Depth: int64); virtual;
@@ -209,6 +210,7 @@ type
     procedure ApplyOption(AOption: TEngineOption); overload;
     procedure ApplyOption(const AValue: string); overload;
     // Overridden methods
+    procedure NewGame; override;
     procedure StartInfinite; override;
     procedure StartFixedTime(TimeMsec: int64); override; 
     procedure StartFixedDepth(Depth: int64); override;
@@ -398,6 +400,11 @@ begin
   FreeAndNil(AMessage);
 end;
 
+procedure TAbstractChessEngine.NewGame;
+// Indicates that the new game is started.
+begin
+end;
+
 procedure TAbstractChessEngine.StartInfinite;
 // Starts the infinite analysis.
 begin
@@ -579,6 +586,12 @@ begin
       ApplyOption(I);
       Exit;
     end;
+end;
+
+procedure TUCIChessEngine.NewGame;
+begin
+  inherited NewGame;
+  FProcess.SendCommand(TNewGameCommand.Create);
 end;
 
 procedure TUCIChessEngine.StartInfinite;

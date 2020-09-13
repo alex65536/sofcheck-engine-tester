@@ -235,6 +235,8 @@ begin
     UciConverter := TUCIMoveConverter.Create;
     FFirstEngine.MoveChain.Assign(Chain);
     FSecondEngine.MoveChain.Assign(Chain);
+    FFirstEngine.NewGame;
+    FSecondEngine.NewGame;
     if SwitchSides then
     begin
       Engines[pcWhite] := FSecondEngine;
