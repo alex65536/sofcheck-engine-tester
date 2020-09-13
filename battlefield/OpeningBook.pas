@@ -9,6 +9,10 @@ uses
 
 type
 
+  { EOpeningBook }
+
+  EOpeningBook = class(Exception);
+
   { TAbstractOpeningBook }
 
   TAbstractOpeningBook = class
@@ -70,6 +74,12 @@ uses
 type
   TOpeningBookClass = class of TAbstractOpeningBook;
 
+function IsFenStringComment(S: string): boolean;
+begin
+  S := S.Trim;
+  Result := (S = '') or (S[1] = '#');
+end;
+
 { TFenListOpeningBook }
 
 procedure TFenListOpeningBook.FillOpening(Chain: TMoveChain);
@@ -97,16 +107,27 @@ end;
 
 constructor TFenListOpeningBook.Create(FenStrings: TStringList);
 var
+  Pos, Count: integer;
   I: integer;
   Board: TChessBoard;
 begin
-  SetLength(FBoards, FenStrings.Count);
+  Count := 0;
+  for I := 0 to FenStrings.Count - 1 do
+    if not IsFenStringComment(FenStrings[I]) then
+      Inc(Count);
+  if Count = 0 then
+    raise EOpeningBook.Create('The specified FEN list is empty');
+  SetLength(FBoards, Count);
   Board := TChessBoard.Create(false);
   try
+    Pos := 0;
     for I := 0 to FenStrings.Count - 1 do
     begin
+      if IsFenStringComment(FenStrings[I]) then
+        continue;
       Board.FENString := FenStrings[I];
-      FBoards[I] := Board.RawBoard;
+      FBoards[Pos] := Board.RawBoard;
+      Inc(Pos);
     end;
   finally
     FreeAndNil(Board);
