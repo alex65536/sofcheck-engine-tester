@@ -6,6 +6,7 @@ These utilities include:
 - [Position cost tester](#position-cost-tester)
 - [Battlefield](#battlefield)
 - [Data generator for selftests](#data-generator-for-selftests)
+- [Test position set for BattleField](#test-position-set-for-battlefield)
 
 This project is mostly written in Pascal, as it relies on core libraries of
 [Chess 256](https://github.com/alex65536/Chess256). These libraries were taken from the source
@@ -84,6 +85,11 @@ $ ./selftest_data_create >boards.fen
 
 The resulting `boards.fen` will be the same as `boards.fen` which is used for self-tests in
 SoFCheck repository.
+
+### Test position set for BattleField
+
+This is not a utility, but a set of positions on which the engine evaluation function is tested.
+These positions can be used with BattleField.
 
 # License
 
