@@ -24,11 +24,11 @@ type
 
   TGameVector = specialize TVector<RGame>;
 
-  TEngineOptionsKind = (eoTime, eoDepth);
+  TEngineTimeControlKind = (eoTime, eoDepth);
 
   REngineOptions = record
-    Kind: TEngineOptionsKind;
-    Value: int64;
+    TimeControlKind: TEngineTimeControlKind;
+    TimeControl: int64;
   end;
 
   { TEngineFactory }
@@ -204,11 +204,11 @@ var
   procedure RunEngine(Engine: TAbstractChessEngine);
   begin
     Engine.OnStop := @EngineStop;
-    case Options.Kind of
-      eoDepth: Engine.StartFixedDepth(Options.Value);
-      eoTime: Engine.StartFixedTime(Options.Value);
+    case Options.TimeControlKind of
+      eoDepth: Engine.StartFixedDepth(Options.TimeControl);
+      eoTime: Engine.StartFixedTime(Options.TimeControl);
       else
-        raise Exception.Create('Some option types are not supported');
+        raise Exception.Create('Some time control types are not supported');
     end;
     Engine.WaitForStop(MaxInt);
   end;
