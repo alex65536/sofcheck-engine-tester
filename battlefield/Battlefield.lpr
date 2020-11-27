@@ -52,6 +52,7 @@ uses {$IFDEF UNIX}
 const
   P0_9 = 1.64485362695147;
   P0_95 = 1.95996398454005;
+  P0_97 = 2.17009037758456;
   P0_99 = 2.57582930354890;
 
   procedure ProbabilityCheck(P, Len: double; Win, Draw, Count: integer);
@@ -230,6 +231,7 @@ begin
     WriteLn('Checking confidence interval:');
     ProbabilityCheck(0.9, P0_9, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.95, P0_95, Runner.FirstWins, Runner.Draws, Games);
+    ProbabilityCheck(0.97, P0_97, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.99, P0_99, Runner.FirstWins, Runner.Draws, Games);
   finally
     FreeAndNil(Runner);
