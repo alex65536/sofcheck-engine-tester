@@ -41,7 +41,7 @@ uses {$IFDEF UNIX}
     WriteLn('               default, the games are started from positions in the');
     WriteLn('               built-in opening book');
     WriteLn('  -s SCORE     Terminate the game after both sides agree that the');
-    WriteLn('               score is larger than SCORE for the same side');
+    WriteLn('               score is larger than SCORE centipawns for the same side');
   end;
 
   procedure ShowError(const Error: string);
