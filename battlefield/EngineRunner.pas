@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, MoveChains, ChessRules, ChessEngines,
-  gvector, PGNUtils, MoveConverters, NotationLists, OpeningBook;
+  gvector, PGNUtils, MoveConverters, NotationLists, OpeningBook, EngineScores;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
@@ -29,6 +29,9 @@ type
   REngineOptions = record
     TimeControlKind: TEngineTimeControlKind;
     TimeControl: int64;
+    // Terminate the game when both sides agree that one of them wins with
+    // Score >= ScoreThreshold. Must be set to zero for no threshold.
+    ScoreThreshold: integer;
   end;
 
   { TEngineFactory }
@@ -84,6 +87,26 @@ type
   end;
 
 implementation
+
+function PredictGameWinner(const Score: RPositionScore; Threshold: integer): TGameWinner;
+begin
+  if (Threshold = 0) or (Score = DefaultPositionScore) or (Score.Kind <> skNormal) then
+    Exit(gwNone);
+  if Score.Mate <> DefaultMate then
+  begin
+    if Score.Mate >= 0 then
+      Result := gwWhite
+    else
+      Result := gwBlack;
+    Exit;
+  end;
+  if Score.Score >= Threshold then
+    Result := gwWhite
+  else if Score.Score <= -Threshold then
+    Result := gwBlack
+  else
+    Result := gwNone;
+end;
 
 { TUciEngineFactory }
 
@@ -200,6 +223,7 @@ var
   Color: TPieceColor;
   Move: RChessMove;
   UciConverter: TUCIMoveConverter;
+  WinPredicts: array [TPieceColor] of TGameWinner;
 
   procedure RunEngine(Engine: TAbstractChessEngine);
   begin
@@ -231,6 +255,8 @@ begin
   UciConverter := nil;
   Chain := TMoveChain.Create;
   FBook.FillOpening(Chain);
+  WinPredicts[pcWhite] := gwNone;
+  WinPredicts[pcBlack] := gwNone;
   try
     UciConverter := TUCIMoveConverter.Create;
     FFirstEngine.MoveChain.Assign(Chain);
@@ -286,6 +312,12 @@ begin
             CurGame.Winner := gwWhite;
           break;
         end;
+      end;
+      WinPredicts[Color] := PredictGameWinner(Engines[Color].State.Score, Options.ScoreThreshold);
+      if (WinPredicts[pcWhite] = WinPredicts[pcBlack]) and (WinPredicts[pcWhite] <> gwNone) then
+      begin
+        CurGame.Winner := WinPredicts[pcWhite];
+        break;
       end;
     end;
     case CurGame.Winner of

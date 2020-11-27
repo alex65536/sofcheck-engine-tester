@@ -24,7 +24,8 @@ uses {$IFDEF UNIX}
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
     WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
-    WriteLn('                   [-d DEPTH] [-t TIMES] [-f FEN_FILE] ENGINE1 ENGINE2');
+    WriteLn('                   [-d DEPTH] [-t TIMES] [-f FEN_FILE] [-s SCORE]');
+    WriteLn('                   ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
     WriteLn('  -v           Show version info and exit');
@@ -39,6 +40,8 @@ uses {$IFDEF UNIX}
     WriteLn('  -f FEN_FILE  Start games from positions found in FEN_FILE. By');
     WriteLn('               default, the games are started from positions in the');
     WriteLn('               built-in opening book');
+    WriteLn('  -s SCORE     Terminate the game after both sides agree that the');
+    WriteLn('               score is larger than SCORE for the same side');
   end;
 
   procedure ShowError(const Error: string);
@@ -186,6 +189,14 @@ begin
       Inc(Param, 2);
       continue;
     end;
+    if ParamStr(Param) = '-s' then
+    begin
+      if Param = ParamCount then
+        ShowError('SCORE expected');
+      Options.ScoreThreshold := StrToInt(ParamStr(Param + 1));
+      Inc(Param, 2);
+      continue;
+    end;
     if ParamStr(Param).StartsWith('-') then
       ShowError('Unknown flag ' + ParamStr(Param));
     if FirstEngine = '' then
@@ -210,6 +221,8 @@ begin
     ShowError('JOBS must be non-negative');
   if Options.TimeControl <= 0 then
     ShowError('DEPTH and TIME must be positive');
+  if Options.ScoreThreshold < 0 then
+    ShowError('SCORE must be non-negative');
 
   try
     if not Quiet then
