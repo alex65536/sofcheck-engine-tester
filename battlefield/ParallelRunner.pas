@@ -30,7 +30,8 @@ type
     property Draws: integer read GetDraws;
 
     // Run this only after the threads joined
-    procedure SaveGamesToStream(Stream: TStream);
+    procedure SaveGamesAsPGN(Stream: TStream);
+    procedure SaveGamesAsDataset(Stream: TStream);
 
     destructor Destroy; override;
 
@@ -183,7 +184,7 @@ begin
   inherited;
 end;
 
-procedure TParallelRunner.SaveGamesToStream(Stream: TStream);
+procedure TParallelRunner.SaveGamesAsPGN(Stream: TStream);
 var
   Runner: TEngineRunner;
   I: integer;
@@ -192,7 +193,24 @@ begin
   for Runner in FRunners do
     for I := 0 to Runner.GameCount - 1 do
     begin
-      S := Runner.Games[I].ToString + LineEnding;
+      S := Runner.Games[I].ToPGNString + LineEnding;
+      Stream.Write(PChar(S)^, Length(S));
+    end;
+end;
+
+procedure TParallelRunner.SaveGamesAsDataset(Stream: TStream);
+var
+  Runner: TEngineRunner;
+  I: integer;
+  S: string;
+  GameId: integer;
+begin
+  GameId := 0;
+  for Runner in FRunners do
+    for I := 0 to Runner.GameCount - 1 do
+    begin
+      Inc(GameId);
+      S := Runner.Games[I].ToDataset(GameId) + LineEnding;
       Stream.Write(PChar(S)^, Length(S));
     end;
 end;

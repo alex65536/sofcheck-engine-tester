@@ -23,15 +23,17 @@ uses {$IFDEF UNIX}
       WriteLn;
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
-    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] -g GAMES');
-    WriteLn('                   [-d DEPTH] [-t TIMES] [-f FEN_FILE] [-s SCORE]');
-    WriteLn('                   ENGINE1 ENGINE2');
+    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] [-r FILE]');
+    WriteLn('                   -g GAMES [-d DEPTH] [-t TIMES] [-f FEN_FILE]');
+    WriteLn('                   [-s SCORE] ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
     WriteLn('  -v           Show version info and exit');
     WriteLn('  -q           Do not show progress');
     WriteLn('  -j JOBS      Specify number of games to run simultaneoulsly');
     WriteLn('  -o PGN_FILE  Write PGN of the games into PGN_FILE');
+    WriteLn('  -r FILE      Write the positions occurred in the game, in format');
+    WriteLn('               recognized by SoFCheck''s MakeDataset');
     WriteLn('  -g GAMES     Number of games to run');
     WriteLn('  -d DEPTH     Run engines on fixed depth. You must specify either -d');
     WriteLn('               or -t');
@@ -87,6 +89,7 @@ var
   FirstEngine: string = '';
   SecondEngine: string = '';
   PgnFile: string = '';
+  DatasetFile: string = '';
   FenFile: string = '';
   Options: REngineOptions;
   HasOptions: boolean = False;
@@ -181,6 +184,14 @@ begin
       Inc(Param, 2);
       continue;
     end;
+    if ParamStr(Param) = '-r' then
+    begin
+      if Param = ParamCount then
+        ShowError('FILE expected');
+      DatasetFile := ParamStr(Param + 1);
+      Inc(Param, 2);
+      continue;
+    end;
     if ParamStr(Param) = '-f' then
     begin
       if Param = ParamCount then
@@ -235,7 +246,13 @@ begin
     if PgnFile <> '' then
     begin
       Stream := TFileStream.Create(PgnFile, fmCreate or fmOpenWrite);
-      Runner.SaveGamesToStream(Stream);
+      Runner.SaveGamesAsPgn(Stream);
+    end;
+    if DatasetFile <> '' then
+    begin
+      FreeAndNil(Stream);
+      Stream := TFileStream.Create(DatasetFile, fmCreate or fmOpenWrite);
+      Runner.SaveGamesAsDataset(Stream);
     end;
     WriteLn('Wins: ', Runner.FirstWins, ', Loses: ', Runner.SecondWins,
       ', Draws: ', Runner.Draws);

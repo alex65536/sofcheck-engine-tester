@@ -19,7 +19,8 @@ type
     BlackName: string;
     Winner: TGameWinner;
 
-    function ToString: string;
+    function ToPGNString: string;
+    function ToDataset(GameId: integer): string;
   end;
 
   TGameVector = specialize TVector<RGame>;
@@ -135,7 +136,7 @@ end;
 
 { RGame }
 
-function RGame.ToString: string;
+function RGame.ToPGNString: string;
 var
   Converter: TPGNMoveConverter;
   Board: TChessBoard;
@@ -160,6 +161,28 @@ begin
       LineEnding;
   finally
     FreeAndNil(Converter);
+  end;
+end;
+
+function RGame.ToDataset(GameId: integer): string;
+const
+  WinnerStr: array [TGameWinner] of string = ('?', 'W', 'B', 'D');
+var
+  Board: TChessBoard;
+  Head: string;
+  I: integer;
+begin
+  Board := TChessBoard.Create(False);
+  try
+    Result := '';
+    Head := WinnerStr[Winner] + ' ' + IntToStr(GameId) + ' ';
+    for I := -1 to Chain.Count - 1 do
+    begin
+      Board.RawBoard := Chain.Boards[I];
+      Result := Result + Head + Board.FENString + LineEnding;
+    end;
+  finally
+    FreeAndNil(Board);
   end;
 end;
 
@@ -313,8 +336,10 @@ begin
           break;
         end;
       end;
-      WinPredicts[Color] := PredictGameWinner(Engines[Color].State.Score, Options.ScoreThreshold);
-      if (WinPredicts[pcWhite] = WinPredicts[pcBlack]) and (WinPredicts[pcWhite] <> gwNone) then
+      WinPredicts[Color] := PredictGameWinner(Engines[Color].State.Score,
+        Options.ScoreThreshold);
+      if (WinPredicts[pcWhite] = WinPredicts[pcBlack]) and
+        (WinPredicts[pcWhite] <> gwNone) then
       begin
         CurGame.Winner := WinPredicts[pcWhite];
         break;
