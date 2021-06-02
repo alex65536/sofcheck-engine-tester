@@ -195,7 +195,7 @@ end;
 
 constructor TBoardMoveConverter.Create(ARawBoard: RRawBoard);
 begin
-  FChessBoard := TChessBoard.Create;
+  FChessBoard := TChessBoard.Create(False, False);
   inherited Create(ARawBoard);
 end;
 
@@ -211,6 +211,9 @@ constructor TStandardMoveConverter.Create(ARawBoard: RRawBoard);
 begin
   FMoveConversion := DefaultMoveConversion;
   inherited Create(ARawBoard);
+  ChessBoard.AutoGenerateMoves := True;
+  ChessBoard.AutoPutChecks := True;
+  ChessBoard.ValidateMakeMove := True;
 end;
 
 function TStandardMoveConverter.GetMoveString(const AMove: RChessMove): string;
@@ -648,6 +651,7 @@ function TUCIMoveConverter.ParseMove(const MoveString: string): RChessMove;
     SY := 7 - Ord(S[2]) + Ord('1');
     DX := Ord(S[3]) - Ord('a');
     DY := 7 - Ord(S[4]) + Ord('1');
+    ChessBoard.GenerateMovesForCell(SX, SY, True, False);
     AMove := ChessBoard.GetMove(SX, SY, DX, DY);
     if AMove.Kind = mkImpossible then
       Exit;

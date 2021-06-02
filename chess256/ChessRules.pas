@@ -87,6 +87,8 @@ type
   TChessBoard = class(TChessObject)
   private
     FAutoGenerateMoves: boolean;
+    FAutoPutChecks: boolean;
+    FValidateMakeMove: boolean;
     FMoveCount: integer;
     FMoves: array of RChessMove;
     FRawBoard: RRawBoard;
@@ -132,6 +134,8 @@ type
     property MoveNumber: integer read GetMoveNumber write SetMoveNumber;
     property AutoGenerateMoves: boolean read FAutoGenerateMoves
       write SetAutoGenerateMoves; //Be careful, there will be no vaidation.
+    property ValidateMakeMove: boolean read FValidateMakeMove write FValidateMakeMove;
+    property AutoPutChecks: boolean read FAutoPutChecks write FAutoPutChecks;
     // Board methods
     procedure ClearBoard;
     procedure InitialPosition;
@@ -141,6 +145,8 @@ type
     procedure ClearList;
     procedure GenerateMoves(Validate: boolean = True; PutCheck: boolean = True;
       MaxCount: integer = 512);
+    procedure GenerateMovesForCell(X, Y: integer; Validate: boolean = True;
+      PutCheck: boolean = True; MaxCount: integer = 512);
     procedure PutChecks;
     // Filters
     procedure FilterBy(Filter: TMoveFilter); overload;
@@ -154,7 +160,7 @@ type
     function GetCheckKind: TCheckKind;
     procedure GetKingXY(out X, Y: integer);
     procedure DoChange; override;
-    constructor Create(AAutoGen: boolean = True);
+    constructor Create(AAutoGen: boolean = True; AAutoPutChecks: boolean = True);
     destructor Destroy; override;
   end;
 
@@ -559,7 +565,8 @@ begin
 end;
 
 function GenerateMoves(Board: RRawBoard; AddMove: TAddMoveEvent;
-  Validate: boolean = True; MaxCount: integer = 512): integer;
+  Validate: boolean = True; MaxCount: integer = 512;
+  CellX: integer = -1; CellY: integer = -1): integer;
   // Move generator.
 var
   KingX, KingY: integer;
@@ -809,19 +816,12 @@ var
     end;
   end;
 
-var
-  I, J: integer;
-begin
-  GeneratedCount := 0;
-  Move.Check := ckNone;
-  InitAll;
-  AddCastlings;
-  for I := 0 to 7 do
-    for J := 0 to 7 do
-      with Board.Field[I, J] do
+  procedure ProcessCell(I, J: integer);
+  begin
+    with Board.Field[I, J] do
       begin
         if Color <> Board.MoveSide then
-          Continue;
+          Exit;
         case Kind of
           pkPawn: AddPawn(I, J);
           pkKnight:
@@ -877,10 +877,29 @@ begin
             AddOnLine(I, J, -1, -1, 1, pkKing);
           end;
         end;
-        // stop generator (if nessesary)
-        if GeneratedCount >= MaxCount then
-          Exit(GeneratedCount);
       end;
+  end;
+
+var
+  I, J: integer;
+begin
+  GeneratedCount := 0;
+  Move.Check := ckNone;
+  InitAll;
+  AddCastlings;
+  if (CellX >= 0) and (CellY >= 0) then
+  begin
+    ProcessCell(CellX, CellY);
+    Exit(GeneratedCount);
+  end;
+  for I := 0 to 7 do
+    for J := 0 to 7 do
+    begin
+      ProcessCell(I, J);
+      // stop generator (if nessesary)
+      if GeneratedCount >= MaxCount then
+        Exit(GeneratedCount);
+    end;
   Result := GeneratedCount;
 end;
 
@@ -1365,6 +1384,15 @@ begin
     PutChecks;
 end;
 
+procedure TChessBoard.GenerateMovesForCell(X, Y: integer; Validate: boolean;
+  PutCheck: boolean; MaxCount: integer);
+begin
+  ClearList;
+  ChessRules.GenerateMoves(FRawBoard, @AddMoveToList, Validate, MaxCount, X, Y);
+  if PutCheck then
+    PutChecks;
+end;
+
 procedure TChessBoard.PutChecks;
 // Puts the checks onto moves.
 var
@@ -1630,13 +1658,15 @@ procedure TChessBoard.MakeMove(const Move: RChessMove);
 var
   I: integer;
 begin
-  if not FAutoGenerateMoves then
+  if not FValidateMakeMove then
   begin
     // just make a move and that's all.
     ChessRules.MakeMove(FRawBoard, Move);
     DoChange;
     Exit;
   end;
+  if not FAutoGenerateMoves then
+    GenerateMovesForCell(Move.SrcX, Move.SrcY, True, False);
   // check if this move exists
   for I := 0 to FMoveCount - 1 do
     if FMoves[I] = Move then
@@ -1656,7 +1686,7 @@ begin
     Exit;
   ClearList;
   if FAutoGenerateMoves then
-    GenerateMoves;
+    GenerateMoves(True, FAutoPutChecks);
   inherited;
 end;
 
@@ -1672,10 +1702,12 @@ begin
   ChessRules.GetKingXY(FRawBoard, X, Y);
 end;
 
-constructor TChessBoard.Create(AAutoGen: boolean);
+constructor TChessBoard.Create(AAutoGen: boolean; AAutoPutChecks: boolean);
 begin
   inherited Create;
   FAutoGenerateMoves := AAutoGen;
+  FAutoPutChecks := AAutoPutChecks;
+  FValidateMakeMove := AAutoGen;
   FMoveCount := 0;
   SetLength(FMoves, 512);
   InitialPosition;

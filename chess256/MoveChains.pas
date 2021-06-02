@@ -36,7 +36,7 @@ type
   RMoveChainElement = record
     Move: RChessMove;
     NewBoard: RRawBoard;
-    class operator=(const A, B: RMoveChainElement): Boolean;
+    class operator=(const A, B: RMoveChainElement): boolean;
   end;
 
   TMoveChainList = specialize TFPGList<RMoveChainElement>;
@@ -114,12 +114,12 @@ end;
 
 function TMoveChain.GetValidation: boolean;
 begin
-  Result := FChessBoard.AutoGenerateMoves;
+  Result := FChessBoard.ValidateMakeMove;
 end;
 
 procedure TMoveChain.SetValidation(AValue: boolean);
 begin
-  FChessBoard.AutoGenerateMoves := AValue;
+  FChessBoard.ValidateMakeMove := AValue;
 end;
 
 procedure TMoveChain.Clear;
@@ -225,7 +225,8 @@ end;
 
 constructor TMoveChain.Create(const ABaseBoard: RRawBoard);
 begin
-  FChessBoard := TChessBoard.Create;
+  FChessBoard := TChessBoard.Create(False, False);
+  FChessBoard.ValidateMakeMove := True;
   FList := TMoveChainList.Create;
   FHash := TBoardHash.Create;
   Clear(ABaseBoard);
