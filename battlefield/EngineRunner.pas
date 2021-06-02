@@ -169,17 +169,15 @@ const
   WinnerStr: array [TGameWinner] of string = ('?', 'W', 'B', 'D');
 var
   Board: TChessBoard;
-  Head: string;
   I: integer;
 begin
   Board := TChessBoard.Create(False);
   try
-    Result := '';
-    Head := WinnerStr[Winner] + ' ' + IntToStr(GameId) + ' ';
+    Result := 'game ' + WinnerStr[Winner] + ' ' + IntToStr(GameId) + LineEnding;
     for I := -1 to Chain.Count - 1 do
     begin
       Board.RawBoard := Chain.Boards[I];
-      Result := Result + Head + Board.FENString + LineEnding;
+      Result := Result + 'board ' + Board.FENString + LineEnding;
     end;
   finally
     FreeAndNil(Board);
