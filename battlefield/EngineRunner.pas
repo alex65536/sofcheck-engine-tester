@@ -245,17 +245,25 @@ var
   Move: RChessMove;
   UciConverter: TUCIMoveConverter;
   WinPredicts: array [TPieceColor] of TGameWinner;
+  RunOk: boolean;
 
-  procedure RunEngine(Engine: TAbstractChessEngine);
+  function RunEngine(Engine: TAbstractChessEngine): boolean;
+  var
+    TimeBudget: integer;
   begin
+    TimeBudget := MaxInt;
     Engine.OnStop := @EngineStop;
     case Options.TimeControlKind of
       eoDepth: Engine.StartFixedDepth(Options.TimeControl);
-      eoTime: Engine.StartFixedTime(Options.TimeControl);
+      eoTime:
+      begin
+        Engine.StartFixedTime(Options.TimeControl);
+        TimeBudget := Options.TimeControl + 500;
+      end
       else
         raise Exception.Create('Some time control types are not supported');
     end;
-    Engine.WaitForStop(MaxInt);
+    Result := Engine.WaitForStop(TimeBudget);
   end;
 
   procedure RestartEngine(Engine: TAbstractChessEngine);
@@ -306,11 +314,17 @@ begin
         break;
       end;
       Color := Chain.Boards[Chain.Count - 1].MoveSide;
-      RunEngine(Engines[Color]);
-      Move := FEngineResult.BestMove;
-      if Engines[Color].Terminated then
+      RunOk := RunEngine(Engines[Color]);
+      if Engines[Color].Terminated or (not RunOk) then
       begin
-        WriteLn(StdErr, 'Engine "' + Engines[Color].FileName + '" died :(');
+        if Engines[Color].Terminated then
+          WriteLn(StdErr, 'Engine "' + Engines[Color].FileName + '" died :(')
+        else
+        begin
+          WriteLn(StdErr, 'Engine "' + Engines[Color].FileName +
+            '" is not responding :(');
+          Engines[Color].Kill;
+        end;
         if Color = pcWhite then
           CurGame.Winner := gwBlack
         else
@@ -318,6 +332,7 @@ begin
         RestartEngine(Engines[Color]);
         break;
       end;
+      Move := FEngineResult.BestMove;
       try
         Chain.Add(Move);
         FFirstEngine.MoveChain.Add(Move);

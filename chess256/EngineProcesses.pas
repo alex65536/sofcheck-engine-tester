@@ -56,6 +56,7 @@ type
     // Other methods
     procedure LaunchProcess;
     procedure PushStr(S: string);
+    procedure ClearStdErr;
   protected
     procedure DoTerminate;
     procedure DoReadLine(S: string); virtual;
@@ -158,6 +159,7 @@ var
   Cnt: integer;
   S: string;
 begin
+  ClearStdErr;
   Cnt := FProcess.Output.NumBytesAvailable;
   if Cnt = 0 then
     Exit;
@@ -196,6 +198,19 @@ begin
     end;
   // remove all except last (incomplete) line
   Delete(FRemainder, 1, P - 1);
+end;
+
+procedure TConsoleProcess.ClearStdErr;
+// Reads the bytes from stderr to prevent locking the child process
+var
+  Cnt: integer;
+  Buf: string;
+begin
+  Cnt := FProcess.Stderr.NumBytesAvailable;
+  if Cnt = 0 then
+    Exit;
+  SetLength(Buf, Cnt);
+  FProcess.Stderr.Read(Buf[1], Cnt);
 end;
 
 procedure TConsoleProcess.DoTerminate;

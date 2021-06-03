@@ -167,6 +167,7 @@ type
     function WaitForStop(Time: integer = MaxWaitTime): boolean; virtual;
     function WaitForEngine(Time: integer = MaxWaitTime): boolean; virtual;
     procedure ProcessMessages; virtual;
+    procedure Kill; virtual;
     // Creation / Deletion
     constructor Create;
     procedure Initialize; virtual;
@@ -218,6 +219,7 @@ type
     function WaitForStop(Time: integer = MaxWaitTime): boolean; override;
     function WaitForEngine(Time: integer = MaxWaitTime): boolean; override;
     procedure ProcessMessages; override;
+    procedure Kill; override;
     // Creation / Deletion
     constructor Create(const AExeName: string);
     procedure Initialize; override;
@@ -461,6 +463,11 @@ procedure TAbstractChessEngine.ProcessMessages;
 begin
 end;
 
+procedure TAbstractChessEngine.Kill;
+// Force terminate engine
+begin
+end;
+
 constructor TAbstractChessEngine.Create;
 begin
   FMoveChain := TMoveChain.Create;
@@ -644,6 +651,11 @@ end;
 procedure TUCIChessEngine.ProcessMessages;
 begin
   FProcess.TryRead;
+end;
+
+procedure TUCIChessEngine.Kill;
+begin
+  FProcess.Process.Active := False;
 end;
 
 constructor TUCIChessEngine.Create(const AExeName: string);
