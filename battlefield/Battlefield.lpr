@@ -123,7 +123,7 @@ const
   begin
     WinRate := (Win + 0.5 * Draw) / (Win + Draw + Lose);
     EloDif := -Log10(1.0 / WinRate - 1.0) * 400.0;
-    WriteLn('Elo difference: ', EloDif: 0: 2);
+    WriteLn('Elo difference = ', EloDif: 0: 2);
   end;
 
 var
@@ -301,7 +301,7 @@ begin
     WriteLn('Score: ', ScorePairToStr(Runner.FirstWins, Runner.Draws,
       Runner.SecondWins));
     rtcSetBold;
-    WriteLn('Checking confidence interval:');
+    WriteLn('Confidence interval:');
     rtcResetStyle;
     ProbabilityCheck(0.9, P0_9, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.95, P0_95, Runner.FirstWins, Runner.Draws, Games);
