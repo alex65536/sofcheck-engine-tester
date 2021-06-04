@@ -311,7 +311,7 @@ begin
     WriteLn('Other stats:');
     rtcResetStyle;
     PrintLOS(Runner.FirstWins, Runner.SecondWins);
-    PrintEloDifference(Runner.FirstWins, Runner.SecondWins, Runner.Draws);
+    PrintEloDifference(Runner.FirstWins, Runner.Draws, Runner.SecondWins);
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);
