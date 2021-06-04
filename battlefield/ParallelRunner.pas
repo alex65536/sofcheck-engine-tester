@@ -173,11 +173,15 @@ end;
 
 procedure TParallelRunner.Join;
 var
-  Thread: PtrInt;
+  I: integer;
 begin
-  for Thread in FThreads do
-    if Thread <> 0 then
-      WaitForThreadTerminate(Thread, 0);
+  for I := Low(FThreads) to High(FThreads) do
+    if FThreads[I] <> 0 then
+    begin
+      WaitForThreadTerminate(FThreads[I], 0);
+      CloseThread(FThreads[I]);
+      FThreads[I] := 0;
+    end;
 end;
 
 procedure TParallelRunner.BeforeDestruction;
