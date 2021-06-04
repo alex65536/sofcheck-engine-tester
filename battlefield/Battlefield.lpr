@@ -15,6 +15,9 @@ uses {$IFDEF UNIX}
   OpeningBook,
   VersionInfo;
 
+const
+  AppVersionCodename = 'Every Blade is Sharp';
+
   procedure ShowHelp(Banner: boolean = True);
   begin
     if Banner then
@@ -125,7 +128,7 @@ begin
     end;
     if ParamStr(Param) = '-v' then
     begin
-      WriteLn('BattleField version ' + GetAppVersion);
+      WriteLn('BattleField version ' + GetAppVersion + ' "' + AppVersionCodename + '"');
       WriteLn('Build time: ' + GetAppBuildTime);
       WriteLn('Target: ' + GetAppTarget);
       WriteLn('Compiler: FPC ' + FpcVersion);

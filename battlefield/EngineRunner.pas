@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, ChessRules, ChessEngines, gvector, MoveConverters,
-  OpeningBook, EngineScores, GameMetrics;
+  gvector, MoveConverters, OpeningBook, EngineScores, GameNotation, GameMetrics;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
