@@ -5,7 +5,8 @@ unit GameNotation;
 interface
 
 uses
-  Classes, SysUtils, MoveChains, ChessRules, PGNUtils, MoveConverters, NotationLists;
+  Classes, SysUtils, MoveChains, ChessRules, PGNUtils, MoveConverters,
+  NotationLists, EngineScores, gvector;
 
 type
 
@@ -17,6 +18,8 @@ type
     FWhiteName: string;
     FBlackName: string;
     FWinner: TGameWinner;
+  protected
+    function PGNAfterMoveString(I: integer): string; virtual;
   public
     property Chain: TMoveChain read FChain;
     property WhiteName: string read FWhiteName write FWhiteName;
@@ -31,9 +34,43 @@ type
     function ToDataset(GameId: integer): string;
   end;
 
+  { TScoredGameNotation }
+
+  TScoredGameNotation = class(TGameNotation)
+  private
+    type TScoreVector = specialize TVector<RPositionScore>;
+  private
+    FScores: TScoreVector;
+    function GetScoreCount: integer;
+    function GetScores(I: integer): RPositionScore;
+    procedure SetScores(I: integer; const AValue: RPositionScore);
+  protected
+    function PGNAfterMoveString(I: integer): string; override;
+  public
+    property Scores[I: integer]: RPositionScore read GetScores write SetScores;
+    property ScoreCount: integer read GetScoreCount;
+
+    procedure AddScore(const Score: RPositionScore);
+    procedure AddMove(const Move: RChessMove; const Score: RPositionScore);
+    procedure Clear;
+    procedure PadZeroScores;
+
+    constructor Create;
+    constructor Create(const ARawBoard: RRawBoard);
+    destructor Destroy; override;
+  end;
+
 implementation
 
 { TGameNotation }
+
+{$HINTS OFF}
+function TGameNotation.PGNAfterMoveString(I: integer): string;
+begin
+  Result := '';
+end;
+
+{$HINTS ON}
 
 constructor TGameNotation.Create;
 begin
@@ -72,8 +109,8 @@ begin
       end;
     end;
     Result := Result + LineEnding + LineEnding +
-      Chain.ConvertToString(Converter, ' ') + ' ' + GameResultMeanings[Winner] +
-      LineEnding;
+      Chain.ConvertToString(Converter, ' ', @PGNAfterMoveString) +
+      ' ' + GameResultMeanings[Winner] + LineEnding;
   finally
     FreeAndNil(Converter);
   end;
@@ -99,5 +136,75 @@ begin
   end;
 end;
 
-end.
+{ TScoredGameNotation }
 
+function TScoredGameNotation.GetScoreCount: integer;
+begin
+  Result := FScores.Size;
+end;
+
+function TScoredGameNotation.GetScores(I: integer): RPositionScore;
+begin
+  Result := FScores[I];
+end;
+
+procedure TScoredGameNotation.SetScores(I: integer; const AValue: RPositionScore);
+begin
+  FScores[I] := AValue;
+end;
+
+function TScoredGameNotation.PGNAfterMoveString(I: integer): string;
+begin
+  Result := '{[' + PositionScoreToString(Scores[I]) + ']}';
+end;
+
+procedure TScoredGameNotation.AddScore(const Score: RPositionScore);
+begin
+  FScores.PushBack(Score);
+end;
+
+procedure TScoredGameNotation.AddMove(const Move: RChessMove;
+  const Score: RPositionScore);
+begin
+  Chain.Add(Move);
+  AddScore(Score);
+end;
+
+procedure TScoredGameNotation.Clear;
+begin
+  Chain.Clear;
+  FScores.Clear;
+end;
+
+procedure TScoredGameNotation.PadZeroScores;
+const
+  ZeroScore: RPositionScore =
+    (
+    Kind: skNormal;
+    Mate: DefaultMate;
+    Score: 0
+    );
+begin
+  while integer(FScores.Size) < Chain.Count do
+    AddScore(ZeroScore);
+end;
+
+constructor TScoredGameNotation.Create;
+begin
+  inherited Create;
+  FScores := TScoreVector.Create;
+end;
+
+constructor TScoredGameNotation.Create(const ARawBoard: RRawBoard);
+begin
+  inherited Create(ARawBoard);
+  FScores := TScoreVector.Create;
+end;
+
+destructor TScoredGameNotation.Destroy;
+begin
+  FreeAndNil(FScores);
+  inherited Destroy;
+end;
+
+end.

@@ -30,6 +30,7 @@ uses
   SysUtils, FGL, ChessRules, MoveConverters, BoardHashes;
 
 type
+  TAfterMoveConversionFunc = function(I: integer): string of object;
 
   { RMoveChainElement }
 
@@ -74,7 +75,7 @@ type
     procedure AssignTo(Target: TMoveChain);
     // Functions
     function ConvertToString(AConverter: TAbstractMoveConverter;
-      ASeparator: string): string;
+      ASeparator: string; AfterMoveHook: TAfterMoveConversionFunc = nil): string;
     function IsRepetitions: boolean;
     function GetGameResult: RGameResult;
     // Constructors / Destructors
@@ -183,11 +184,12 @@ begin
 end;
 
 function TMoveChain.ConvertToString(AConverter: TAbstractMoveConverter;
-  ASeparator: string): string;
+  ASeparator: string; AfterMoveHook: TAfterMoveConversionFunc): string;
   // Converts the move chain to string. Moves are converted to string with the
   // specified converter.
 var
   I: integer;
+  S: string;
 begin
   Result := '';
   for I := 0 to Count - 1 do
@@ -197,6 +199,12 @@ begin
       Result += ASeparator;
     Result += AConverter.GetMoveSeparator(I = 0);
     Result += AConverter.GetMoveString(Moves[I]);
+    if Assigned(AfterMoveHook) then
+    begin
+      S := AfterMoveHook(I);
+      if S <> '' then
+        Result += ASeparator + S;
+    end;
   end;
 end;
 

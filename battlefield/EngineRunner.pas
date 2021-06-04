@@ -11,7 +11,7 @@ uses
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
 
-  TGameVector = specialize TVector<TGameNotation>;
+  TGameVector = specialize TVector<TScoredGameNotation>;
 
   TEngineTimeControlKind = (eoTime, eoDepth);
 
@@ -57,17 +57,17 @@ type
 
     procedure EngineStop(Sender: TObject; const EngineResult: RAnalysisResult);
 
-    function GetGames(I: integer): TGameNotation;
+    function GetGames(I: integer): TScoredGameNotation;
     function GetGameCount: integer;
   public
     constructor Create(FirstFactory, SecondFactory: TEngineFactory;
       Book: TAbstractOpeningBook);
     destructor Destroy; override;
 
-    function LastGame: TGameNotation;
+    function LastGame: TScoredGameNotation;
 
     property GameCount: integer read GetGameCount;
-    property Games[I: integer]: TGameNotation read GetGames;
+    property Games[I: integer]: TScoredGameNotation read GetGames;
 
     function Play(const Options: REngineOptions;
       SwitchSides: boolean): TEngineMatchWinner;
@@ -130,7 +130,7 @@ begin
   FEngineResult := EngineResult;
 end;
 
-function TEngineRunner.GetGames(I: integer): TGameNotation;
+function TEngineRunner.GetGames(I: integer): TScoredGameNotation;
 begin
   Result := FGames[I];
 end;
@@ -167,7 +167,7 @@ begin
   inherited;
 end;
 
-function TEngineRunner.LastGame: TGameNotation;
+function TEngineRunner.LastGame: TScoredGameNotation;
 begin
   Result := FGames.Back;
 end;
@@ -175,7 +175,7 @@ end;
 function TEngineRunner.Play(const Options: REngineOptions;
   SwitchSides: boolean): TEngineMatchWinner;
 var
-  CurGame: TGameNotation;
+  CurGame: TScoredGameNotation;
   Engines: array [TPieceColor] of TAbstractChessEngine;
   GameResult: RGameResult;
   Color: TPieceColor;
@@ -219,11 +219,12 @@ var
 
 begin
   UciConverter := nil;
-  CurGame := TGameNotation.Create;
+  CurGame := TScoredGameNotation.Create;
   WinPredicts[pcWhite] := gwNone;
   WinPredicts[pcBlack] := gwNone;
   try
     FBook.FillOpening(CurGame.Chain);
+    CurGame.PadZeroScores;
     UciConverter := TUCIMoveConverter.Create;
     FFirstEngine.MoveChain.Assign(CurGame.Chain);
     FSecondEngine.MoveChain.Assign(CurGame.Chain);
@@ -270,7 +271,7 @@ begin
       end;
       Move := FEngineResult.BestMove;
       try
-        CurGame.Chain.Add(Move);
+        CurGame.AddMove(Move, Engines[Color].State.Score);
         FFirstEngine.MoveChain.Add(Move);
         FSecondEngine.MoveChain.Add(Move);
       except
