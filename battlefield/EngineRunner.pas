@@ -6,24 +6,12 @@ interface
 
 uses
   Classes, SysUtils, MoveChains, ChessRules, ChessEngines,
-  gvector, PGNUtils, MoveConverters, NotationLists, OpeningBook, EngineScores;
+  gvector, MoveConverters, OpeningBook, EngineScores, GameNotation;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
 
-  { RGame }
-
-  RGame = record
-    Chain: TMoveChain;
-    WhiteName: string;
-    BlackName: string;
-    Winner: TGameWinner;
-
-    function ToPGNString: string;
-    function ToDataset(GameId: integer): string;
-  end;
-
-  TGameVector = specialize TVector<RGame>;
+  TGameVector = specialize TVector<TGameNotation>;
 
   TEngineTimeControlKind = (eoTime, eoDepth);
 
@@ -69,17 +57,17 @@ type
 
     procedure EngineStop(Sender: TObject; const EngineResult: RAnalysisResult);
 
-    function GetGames(I: integer): RGame;
+    function GetGames(I: integer): TGameNotation;
     function GetGameCount: integer;
   public
     constructor Create(FirstFactory, SecondFactory: TEngineFactory;
       Book: TAbstractOpeningBook);
     destructor Destroy; override;
 
-    function LastGame: RGame;
+    function LastGame: TGameNotation;
 
     property GameCount: integer read GetGameCount;
-    property Games[I: integer]: RGame read GetGames;
+    property Games[I: integer]: TGameNotation read GetGames;
 
     function Play(const Options: REngineOptions;
       SwitchSides: boolean): TEngineMatchWinner;
@@ -134,56 +122,6 @@ begin
   end;
 end;
 
-{ RGame }
-
-function RGame.ToPGNString: string;
-var
-  Converter: TPGNMoveConverter;
-  Board: TChessBoard;
-begin
-  Converter := TPGNMoveConverter.Create;
-  try
-    Result := '[White "' + StringToTagValue(WhiteName) + '"]' +
-      LineEnding + '[Black "' + StringToTagValue(BlackName) + '"]';
-    if Chain.Boards[-1] <> GetInitialPosition then
-    begin
-      Board := TChessBoard.Create(False);
-      try
-        Board.RawBoard := Chain.Boards[-1];
-        Result := Result + LineEnding + '[SetUp "1"]' + LineEnding +
-          '[FEN "' + Board.FENString + '"]';
-      finally
-        FreeAndNil(Board);
-      end;
-    end;
-    Result := Result + LineEnding + LineEnding +
-      Chain.ConvertToString(Converter, ' ') + ' ' + GameResultMeanings[Winner] +
-      LineEnding;
-  finally
-    FreeAndNil(Converter);
-  end;
-end;
-
-function RGame.ToDataset(GameId: integer): string;
-const
-  WinnerStr: array [TGameWinner] of string = ('?', 'W', 'B', 'D');
-var
-  Board: TChessBoard;
-  I: integer;
-begin
-  Board := TChessBoard.Create(False);
-  try
-    Result := 'game ' + WinnerStr[Winner] + ' ' + IntToStr(GameId) + LineEnding;
-    for I := -1 to Chain.Count - 1 do
-    begin
-      Board.RawBoard := Chain.Boards[I];
-      Result := Result + 'board ' + Board.FENString + LineEnding;
-    end;
-  finally
-    FreeAndNil(Board);
-  end;
-end;
-
 { TEngineRunner }
 
 procedure TEngineRunner.EngineStop(Sender: TObject;
@@ -192,7 +130,7 @@ begin
   FEngineResult := EngineResult;
 end;
 
-function TEngineRunner.GetGames(I: integer): RGame;
+function TEngineRunner.GetGames(I: integer): TGameNotation;
 begin
   Result := FGames[I];
 end;
@@ -220,7 +158,7 @@ begin
   if FGames <> nil then
   begin
     for I := 0 to integer(FGames.Size) - 1 do
-      FGames[I].Chain.Free;
+      FGames[I].Free;
   end;
   FreeAndNil(FGames);
   FreeAndNil(FFirstEngine);
@@ -229,7 +167,7 @@ begin
   inherited;
 end;
 
-function TEngineRunner.LastGame: RGame;
+function TEngineRunner.LastGame: TGameNotation;
 begin
   Result := FGames.Back;
 end;
@@ -237,8 +175,7 @@ end;
 function TEngineRunner.Play(const Options: REngineOptions;
   SwitchSides: boolean): TEngineMatchWinner;
 var
-  CurGame: RGame;
-  Chain: TMoveChain;
+  CurGame: TGameNotation;
   Engines: array [TPieceColor] of TAbstractChessEngine;
   GameResult: RGameResult;
   Color: TPieceColor;
@@ -282,14 +219,14 @@ var
 
 begin
   UciConverter := nil;
-  Chain := TMoveChain.Create;
-  FBook.FillOpening(Chain);
+  CurGame := TGameNotation.Create;
   WinPredicts[pcWhite] := gwNone;
   WinPredicts[pcBlack] := gwNone;
   try
+    FBook.FillOpening(CurGame.Chain);
     UciConverter := TUCIMoveConverter.Create;
-    FFirstEngine.MoveChain.Assign(Chain);
-    FSecondEngine.MoveChain.Assign(Chain);
+    FFirstEngine.MoveChain.Assign(CurGame.Chain);
+    FSecondEngine.MoveChain.Assign(CurGame.Chain);
     FFirstEngine.NewGame;
     FSecondEngine.NewGame;
     if SwitchSides then
@@ -302,18 +239,17 @@ begin
       Engines[pcWhite] := FFirstEngine;
       Engines[pcBlack] := FSecondEngine;
     end;
-    CurGame.Chain := Chain;
     CurGame.WhiteName := Engines[pcWhite].Name + ' at ' + Engines[pcWhite].FileName;
     CurGame.BlackName := Engines[pcBlack].Name + ' at ' + Engines[pcBlack].FileName;
     while True do
     begin
-      GameResult := Chain.GetGameResult;
+      GameResult := CurGame.Chain.GetGameResult;
       if GameResult.Winner <> gwNone then
       begin
         CurGame.Winner := GameResult.Winner;
         break;
       end;
-      Color := Chain.Boards[Chain.Count - 1].MoveSide;
+      Color := CurGame.Chain.Boards[CurGame.Chain.Count - 1].MoveSide;
       RunOk := RunEngine(Engines[Color]);
       if Engines[Color].Terminated or (not RunOk) then
       begin
@@ -334,7 +270,7 @@ begin
       end;
       Move := FEngineResult.BestMove;
       try
-        Chain.Add(Move);
+        CurGame.Chain.Add(Move);
         FFirstEngine.MoveChain.Add(Move);
         FSecondEngine.MoveChain.Add(Move);
       except
@@ -370,7 +306,7 @@ begin
       gwDraw: Result := ewDraw;
     end;
   except
-    FreeAndNil(Chain);
+    FreeAndNil(CurGame);
     FreeAndNil(UciConverter);
     raise;
   end;
