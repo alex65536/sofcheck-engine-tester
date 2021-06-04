@@ -5,22 +5,35 @@ unit ParallelRunner;
 interface
 
 uses
-  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils, OpeningBook;
+  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils, OpeningBook,
+  GameMetrics;
 
 type
+
+  { TAbstractMetricPrinter }
+
+  TAbstractMetricPrinter = class
+  public
+    procedure PrintMetrics(Metrics: TGameMetrics); virtual; abstract;
+  end;
 
   { TParallelRunner }
 
   TParallelRunner = class
   private
+    FProgress: TAbstractProgress;
+    FMetricPrinter: TAbstractMetricPrinter;
+
     function GetDraws: integer;
     function GetFirstWins: integer;
     function GetSecondWins: integer;
   public
     constructor Create(Games: integer;
       const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-      Jobs: integer = 0; Book: TAbstractOpeningBook = nil;
-      Progress: TAbstractProgress = nil);
+      Jobs: integer = 0; Book: TAbstractOpeningBook = nil);
+
+    property Progress: TAbstractProgress read FProgress write FProgress;
+    property MetricPrinter: TAbstractMetricPrinter read FMetricPrinter write FMetricPrinter;
 
     procedure Join;
 
@@ -50,7 +63,6 @@ type
     FThreads: array of PtrInt;
     FRunners: array of TEngineRunner;
     FOptions: REngineOptions;
-    FProgress: TAbstractProgress;
     FFirstFactory: TUciEngineFactory;
     FSecondFactory: TUciEngineFactory;
     FGameResults: array [TEngineMatchWinner] of integer;
@@ -72,6 +84,13 @@ type
     FCount: integer;
   end;
 
+  { TParallelRunnerMetricPrinter }
+
+  TParallelRunnerMetricPrinter = class(TAbstractMetricPrinter)
+  public
+    procedure PrintMetrics(Metrics: TGameMetrics); override;
+  end;
+
 implementation
 
 uses
@@ -85,6 +104,13 @@ begin
   Dispose(TParallelRunner.PThreadFuncData(DataPtr));
   Data.Instance.ThreadFunc(Data.Index);
   Result := 0;
+end;
+
+{ TParallelRunnerMetricPrinter }
+
+procedure TParallelRunnerMetricPrinter.PrintMetrics(Metrics: TGameMetrics);
+begin
+  WriteLn(StdErr, Format('Metrics: %s', [Metrics.ToString]));
 end;
 
 { TParallelRunnerProgress }
@@ -129,7 +155,7 @@ end;
 
 constructor TParallelRunner.Create(Games: integer;
   const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-  Jobs: integer; Book: TAbstractOpeningBook; Progress: TAbstractProgress);
+  Jobs: integer; Book: TAbstractOpeningBook);
 var
   I: integer;
   Winner: TEngineMatchWinner;
@@ -140,7 +166,8 @@ begin
   FBook := Book;
   if FBook = nil then
     FBook := TDefaultOpeningBook.CreateDefault;
-  FProgress := Progress;
+  FProgress := nil;
+  FMetricPrinter := nil;
   FOptions := Options;
   InitCriticalSection(FLock);
   FGames := Games;
@@ -261,6 +288,8 @@ begin
         InterlockedIncrement(FGameResults[Winner]);
         if Assigned(FProgress) then
           FProgress.Step(Self);
+        if Assigned(FMetricPrinter) then
+          FMetricPrinter.PrintMetrics(FRunners[Index].LastGame.Metrics);
       finally
         LeaveCriticalSection(FLock);
       end;

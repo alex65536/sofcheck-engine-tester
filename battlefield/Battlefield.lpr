@@ -23,13 +23,14 @@ uses {$IFDEF UNIX}
       WriteLn;
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
-    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] [-r FILE]');
-    WriteLn('                   -g GAMES [-d DEPTH] [-t TIMES] [-f FEN_FILE]');
-    WriteLn('                   [-s SCORE] ENGINE1 ENGINE2');
+    WriteLn('Usage: battlefield [-h] [-v] [-q] [-m] [-j JOBS] [-o PGN_FILE]');
+    WriteLn('                   [-r FILE] -g GAMES [-d DEPTH] [-t TIMES]');
+    WriteLn('                   [-f FEN_FILE] [-s SCORE] ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
     WriteLn('  -v           Show version info and exit');
     WriteLn('  -q           Do not show progress');
+    WriteLn('  -m           Print metrics during run');
     WriteLn('  -j JOBS      Specify number of games to run simultaneoulsly');
     WriteLn('  -o PGN_FILE  Write PGN of the games into PGN_FILE');
     WriteLn('  -r FILE      Write the positions occurred in the game, in format');
@@ -96,10 +97,12 @@ var
   Games: integer = 0;
   Jobs: integer = 0;
   Quiet: boolean = False;
+  PrintMetrics: boolean = False;
 
   Runner: TParallelRunner = nil;
   Stream: TFileStream = nil;
   RunnerProgress: TParallelRunnerProgress = nil;
+  MetricPrinter: TParallelRunnerMetricPrinter = nil;
 
   Book: TAbstractOpeningBook = nil;
 
@@ -131,6 +134,12 @@ begin
     if ParamStr(Param) = '-q' then
     begin
       Quiet := True;
+      Inc(Param);
+      continue;
+    end;
+    if ParamStr(Param) = '-m' then
+    begin
+      PrintMetrics := True;
       Inc(Param);
       continue;
     end;
@@ -238,10 +247,14 @@ begin
   try
     if not Quiet then
       RunnerProgress := TParallelRunnerProgress.Create(Games);
+    if PrintMetrics then
+      MetricPrinter := TParallelRunnerMetricPrinter.Create;
     if FenFile <> '' then
       Book := TFenListOpeningBook.Create(FenFile);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
-      Options, Jobs, Book, RunnerProgress);
+      Options, Jobs, Book);
+    Runner.Progress := RunnerProgress;
+    Runner.MetricPrinter := MetricPrinter;
     Runner.Join;
     if PgnFile <> '' then
     begin
@@ -266,6 +279,7 @@ begin
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);
+    FreeAndNil(MetricPrinter);
     FreeAndNil(Stream);
   end;
 end.

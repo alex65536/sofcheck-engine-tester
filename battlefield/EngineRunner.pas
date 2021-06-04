@@ -5,13 +5,13 @@ unit EngineRunner;
 interface
 
 uses
-  Classes, SysUtils, MoveChains, ChessRules, ChessEngines,
-  gvector, MoveConverters, OpeningBook, EngineScores, GameNotation;
+  Classes, SysUtils, ChessRules, ChessEngines, gvector, MoveConverters,
+  OpeningBook, EngineScores, GameMetrics;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
 
-  TGameVector = specialize TVector<TScoredGameNotation>;
+  TGameVector = specialize TVector<TMetricGameNotation>;
 
   TEngineTimeControlKind = (eoTime, eoDepth);
 
@@ -57,17 +57,17 @@ type
 
     procedure EngineStop(Sender: TObject; const EngineResult: RAnalysisResult);
 
-    function GetGames(I: integer): TScoredGameNotation;
+    function GetGames(I: integer): TMetricGameNotation;
     function GetGameCount: integer;
   public
     constructor Create(FirstFactory, SecondFactory: TEngineFactory;
       Book: TAbstractOpeningBook);
     destructor Destroy; override;
 
-    function LastGame: TScoredGameNotation;
+    function LastGame: TMetricGameNotation;
 
     property GameCount: integer read GetGameCount;
-    property Games[I: integer]: TScoredGameNotation read GetGames;
+    property Games[I: integer]: TMetricGameNotation read GetGames;
 
     function Play(const Options: REngineOptions;
       SwitchSides: boolean): TEngineMatchWinner;
@@ -130,7 +130,7 @@ begin
   FEngineResult := EngineResult;
 end;
 
-function TEngineRunner.GetGames(I: integer): TScoredGameNotation;
+function TEngineRunner.GetGames(I: integer): TMetricGameNotation;
 begin
   Result := FGames[I];
 end;
@@ -167,7 +167,7 @@ begin
   inherited;
 end;
 
-function TEngineRunner.LastGame: TScoredGameNotation;
+function TEngineRunner.LastGame: TMetricGameNotation;
 begin
   Result := FGames.Back;
 end;
@@ -175,7 +175,7 @@ end;
 function TEngineRunner.Play(const Options: REngineOptions;
   SwitchSides: boolean): TEngineMatchWinner;
 var
-  CurGame: TScoredGameNotation;
+  CurGame: TMetricGameNotation;
   Engines: array [TPieceColor] of TAbstractChessEngine;
   GameResult: RGameResult;
   Color: TPieceColor;
@@ -219,11 +219,12 @@ var
 
 begin
   UciConverter := nil;
-  CurGame := TScoredGameNotation.Create;
+  CurGame := TMetricGameNotation.Create;
   WinPredicts[pcWhite] := gwNone;
   WinPredicts[pcBlack] := gwNone;
   try
     FBook.FillOpening(CurGame.Chain);
+    CurGame.SwitchSides := SwitchSides;
     CurGame.PadZeroScores;
     UciConverter := TUCIMoveConverter.Create;
     FFirstEngine.MoveChain.Assign(CurGame.Chain);
@@ -306,6 +307,7 @@ begin
           Result := ewSecond;
       gwDraw: Result := ewDraw;
     end;
+    CurGame.CalculateMetrics;
   except
     FreeAndNil(CurGame);
     FreeAndNil(UciConverter);
