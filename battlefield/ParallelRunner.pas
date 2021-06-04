@@ -13,14 +13,17 @@ type
 
   TParallelRunner = class
   private
+    FProgress: TAbstractProgress;
+
     function GetDraws: integer;
     function GetFirstWins: integer;
     function GetSecondWins: integer;
   public
     constructor Create(Games: integer;
       const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-      Jobs: integer = 0; Book: TAbstractOpeningBook = nil;
-      Progress: TAbstractProgress = nil);
+      Jobs: integer = 0; Book: TAbstractOpeningBook = nil);
+
+    property Progress: TAbstractProgress read FProgress write FProgress;
 
     procedure Join;
 
@@ -50,7 +53,6 @@ type
     FThreads: array of PtrInt;
     FRunners: array of TEngineRunner;
     FOptions: REngineOptions;
-    FProgress: TAbstractProgress;
     FFirstFactory: TUciEngineFactory;
     FSecondFactory: TUciEngineFactory;
     FGameResults: array [TEngineMatchWinner] of integer;
@@ -129,7 +131,7 @@ end;
 
 constructor TParallelRunner.Create(Games: integer;
   const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
-  Jobs: integer; Book: TAbstractOpeningBook; Progress: TAbstractProgress);
+  Jobs: integer; Book: TAbstractOpeningBook);
 var
   I: integer;
   Winner: TEngineMatchWinner;
@@ -140,7 +142,7 @@ begin
   FBook := Book;
   if FBook = nil then
     FBook := TDefaultOpeningBook.CreateDefault;
-  FProgress := Progress;
+  FProgress := nil;
   FOptions := Options;
   InitCriticalSection(FLock);
   FGames := Games;

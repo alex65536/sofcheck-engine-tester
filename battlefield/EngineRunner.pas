@@ -5,8 +5,8 @@ unit EngineRunner;
 interface
 
 uses
-  Classes, SysUtils, MoveChains, ChessRules, ChessEngines,
-  gvector, MoveConverters, OpeningBook, EngineScores, GameNotation;
+  Classes, SysUtils, ChessRules, ChessEngines, gvector, MoveConverters,
+  OpeningBook, EngineScores, GameNotation;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);

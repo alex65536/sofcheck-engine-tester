@@ -241,7 +241,8 @@ begin
     if FenFile <> '' then
       Book := TFenListOpeningBook.Create(FenFile);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
-      Options, Jobs, Book, RunnerProgress);
+      Options, Jobs, Book);
+    Runner.Progress := RunnerProgress;
     Runner.Join;
     if PgnFile <> '' then
     begin
