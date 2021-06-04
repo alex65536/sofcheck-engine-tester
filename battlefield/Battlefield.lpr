@@ -18,7 +18,7 @@ uses {$IFDEF UNIX}
   Math;
 
 const
-  AppVersionCodename = 'Every Blade is Sharp';
+  AppVersionCodename = 'The Arrows Fly';
 
   procedure ShowHelp(Banner: boolean = True);
   begin
