@@ -13,7 +13,9 @@ uses {$IFDEF UNIX}
   ScoreUtils,
   RichTextConsole,
   OpeningBook,
-  VersionInfo;
+  VersionInfo,
+  spe,
+  Math;
 
 const
   AppVersionCodename = 'Every Blade is Sharp';
@@ -86,6 +88,42 @@ const
     else
       WriteLn('Unclear');
     rtcResetStyle;
+  end;
+
+  procedure PrintLOS(Win, Lose: integer);
+  var
+    Value: double;
+  begin
+    Write('LOS = ');
+    rtcSetBold;
+    if Win + Lose = 0 then
+    begin
+      rtcSetFgColor(cclWhite);
+      Write('N/A');
+    end
+    else
+    begin
+      Value := 0.5 * (1.0 + speerf((Win - Lose) / Sqrt(2 * (Win + Lose))));
+      if Value < 0.1 then
+        rtcSetFgColor(cclRed)
+      else if Value <= 0.9 then
+        rtcSetFgColor(cclYellow)
+      else
+        rtcSetFgColor(cclGreen);
+      Write(Value: 0: 2);
+    end;
+    rtcResetStyle;
+    WriteLn;
+  end;
+
+  procedure PrintEloDifference(Win, Draw, Lose: integer);
+  var
+    WinRate: double;
+    EloDif: double;
+  begin
+    WinRate := (Win + 0.5 * Draw) / (Win + Draw + Lose);
+    EloDif := -Log10(1.0 / WinRate - 1.0) * 400.0;
+    WriteLn('Elo difference: ', EloDif: 0: 2);
   end;
 
 var
@@ -262,11 +300,18 @@ begin
       ', Draws: ', Runner.Draws);
     WriteLn('Score: ', ScorePairToStr(Runner.FirstWins, Runner.Draws,
       Runner.SecondWins));
+    rtcSetBold;
     WriteLn('Checking confidence interval:');
+    rtcResetStyle;
     ProbabilityCheck(0.9, P0_9, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.95, P0_95, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.97, P0_97, Runner.FirstWins, Runner.Draws, Games);
     ProbabilityCheck(0.99, P0_99, Runner.FirstWins, Runner.Draws, Games);
+    rtcSetBold;
+    WriteLn('Other stats:');
+    rtcResetStyle;
+    PrintLOS(Runner.FirstWins, Runner.SecondWins);
+    PrintEloDifference(Runner.FirstWins, Runner.SecondWins, Runner.Draws);
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);
