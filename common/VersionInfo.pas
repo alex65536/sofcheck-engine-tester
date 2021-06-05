@@ -44,7 +44,7 @@ end;
 
 function GetAppTarget: string;
 begin
-  Result := TargetCPU + '-' + TargetOS;
+  Result := TargetCPU + '-' + LowerCase(TargetOS);
 end;
 
 function GetAppVersion: string;
