@@ -164,9 +164,14 @@ begin
     if ParamStr(Param) = '-v' then
     begin
       WriteLn('BattleField version ' + GetAppVersion + ' "' + AppVersionCodename + '"');
+      WriteLn('Copyright (C) 2021 Alexander Kernozhitsky');
+      WriteLn;
       WriteLn('Build time: ' + GetAppBuildTime);
       WriteLn('Target: ' + GetAppTarget);
       WriteLn('Compiler: FPC ' + FpcVersion);
+      WriteLn;
+      WriteLn('This is free software; see the source for copying conditions.  There is NO');
+      WriteLn('warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.');
       Halt(0);
     end;
     if ParamStr(Param) = '-q' then
