@@ -107,6 +107,16 @@ end;
 function TUciEngineFactory.DoCreateChessEngine: TAbstractChessEngine;
 begin
   Result := TUCIChessEngine.Create(FExeName);
+  try
+    with Result as TUCIChessEngine do
+    begin
+      ExtractPV := False;
+      ExtractCurMove := False;
+    end;
+  except
+    FreeAndNil(Result);
+    raise;
+  end;
 end;
 
 { TEngineFactory }

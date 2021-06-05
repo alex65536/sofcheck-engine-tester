@@ -153,11 +153,12 @@ procedure TUCIChessEngine.MsgReceiver(Sender: TObject; AMessage: TEngineMessage)
       if AName = 'score' then
         ProcessScore((AMessage.List[I] as TScoreMessageInfo).PositionScore);
       if AName = 'pv' then
-        with AMessage.List[I] as TMoveChainMessageInfo do
-        begin
-          ExtractMoveChain(Self.FMoveChain.Boards[Self.FMoveChain.Count - 1]);
-          ProcessPV(MoveChain);
-        end;
+        if FExtractPV then
+          with AMessage.List[I] as TMoveChainMessageInfo do
+          begin
+            ExtractMoveChain(Self.FMoveChain.Boards[Self.FMoveChain.Count - 1]);
+            ProcessPV(MoveChain);
+          end;
       if AName = 'depth' then
         ProcessDepth((AMessage.List[I] as TIntegerMessageInfo).Value);
       if AName = 'nodes' then
@@ -167,12 +168,13 @@ procedure TUCIChessEngine.MsgReceiver(Sender: TObject; AMessage: TEngineMessage)
       if AName = 'currmovenumber' then
         ProcessMoveNumber((AMessage.List[I] as TIntegerMessageInfo).Value);
       if AName = 'currmove' then
-        with AMessage.List[I] as TMoveChainMessageInfo do
-        begin
-          ExtractMoveChain(Self.FMoveChain.Boards[FMoveChain.Count - 1]);
-          if MoveChain.Count <> 0 then
-            ProcessCurMove(MoveChain.Moves[0]);
-        end;
+        if FExtractCurMove then
+          with AMessage.List[I] as TMoveChainMessageInfo do
+          begin
+            ExtractMoveChain(Self.FMoveChain.Boards[FMoveChain.Count - 1]);
+            if MoveChain.Count <> 0 then
+              ProcessCurMove(MoveChain.Moves[0]);
+          end;
       if AName = 'string' then
         ProcessString((AMessage.List[I] as TStringMessageInfo).Value);
     end;

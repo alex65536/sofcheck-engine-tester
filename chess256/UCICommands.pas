@@ -1227,17 +1227,20 @@ begin
   FBestMove.Kind := mkImpossible;
   FPonderMove.Kind := mkImpossible;
   Converter := TUCIMoveConverter.Create;
-  ChessBoard := TChessBoard.Create;
+  ChessBoard := nil;
   try
     // parsing BestMove
-    ChessBoard.RawBoard := ABaseBoard;
-    Converter.RawBoard := ChessBoard.RawBoard;
+    Converter.RawBoard := ABaseBoard;
     FBestMove := Converter.ParseMove(FBestMoveStr);
     // parsing PonderMove
-    ChessBoard.MakeMove(FBestMove);
-    Converter.RawBoard := ChessBoard.RawBoard;
     if FPonderMoveStr <> '' then
+    begin
+      ChessBoard := TChessBoard.Create(False, False);
+      ChessBoard.RawBoard := ABaseBoard;
+      ChessBoard.MakeMove(FBestMove);
+      Converter.RawBoard := ChessBoard.RawBoard;
       FPonderMove := Converter.ParseMove(FPonderMoveStr);
+    end;
   except
     // mute the exceptions
   end;

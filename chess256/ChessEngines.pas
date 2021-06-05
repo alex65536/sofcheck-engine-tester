@@ -161,7 +161,7 @@ type
     // Methods
     procedure NewGame; virtual;
     procedure StartInfinite; virtual;
-    procedure StartFixedTime(TimeMsec: int64); virtual; 
+    procedure StartFixedTime(TimeMsec: int64); virtual;
     procedure StartFixedDepth(Depth: int64); virtual;
     procedure Stop; virtual; // the engine won't stop before sending OnStop!
     function WaitForStop(Time: integer = MaxWaitTime): boolean; virtual;
@@ -183,6 +183,8 @@ type
 
   TUCIChessEngine = class(TAbstractChessEngine)
   private
+    FExtractCurMove: boolean;
+    FExtractPV: boolean;
     FOptions: TEngineOptionList;
     FProcess: TUCIEngineProcess;
     FName: string;
@@ -204,6 +206,8 @@ type
     function GetAuthor: string; override;
     function GetFileName: string; override;
   public
+    property ExtractPV: boolean read FExtractPV write FExtractPV;
+    property ExtractCurMove: boolean read FExtractCurMove write FExtractCurMove;
     // Options work
     property Options[I: integer]: TEngineOption read GetOptions;
     property OptionCount: integer read GetOptionCount;
@@ -213,7 +217,7 @@ type
     // Overridden methods
     procedure NewGame; override;
     procedure StartInfinite; override;
-    procedure StartFixedTime(TimeMsec: int64); override; 
+    procedure StartFixedTime(TimeMsec: int64); override;
     procedure StartFixedDepth(Depth: int64); override;
     procedure Stop; override;
     function WaitForStop(Time: integer = MaxWaitTime): boolean; override;
@@ -664,6 +668,8 @@ begin
   FEngineInited := False;
   FName := '';
   FAuthor := '';
+  FExtractPV := True;
+  FExtractCurMove := True;
   FOptions := TEngineOptionList.Create(True);
   FProcess := TUCIEngineProcess.Create(AExeName);
   FProcess.MsgReceiver := @MsgReceiver;
