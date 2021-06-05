@@ -32,7 +32,7 @@ interface
 
 uses
   Classes, SysUtils, FGL, ChessUtils, ChessRules, MoveChains, ChessTime,
-  EngineProcesses, UCICommands, EngineScores;
+  EngineProcesses, UCICommands, EngineScores, TimeUtils;
 
 resourcestring
   SUCICannotInit = 'Executable "%s" cannot be inited as UCI chess engine. ' +
@@ -529,7 +529,7 @@ begin
     if Bool^ = RequiredState then
       Exit;
     ProcessMessages;
-    Sleep(1);
+    PreciseSleep(1);
   end;
   Result := False;
 end;

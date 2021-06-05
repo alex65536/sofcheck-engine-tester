@@ -11,7 +11,7 @@ uses
   BoardHashes, ChessEngines, ChessNotation, ChessRules, ChessStrings, 
   ChessTime, ChessUtils, EngineProcesses, EngineScores, MoveChains, 
   MoveConverters, NotationLists, NotationMessaging, NotationTags, 
-  NotationUtils, PGNUtils, UCICommands;
+  NotationUtils, PGNUtils, UCICommands, TimeUtils;
 
 implementation
 
