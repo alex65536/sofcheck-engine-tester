@@ -63,17 +63,17 @@ end;
 
 constructor TSleeper.Create(Millis: int64);
 begin
-  FTimeEvent := timeSetEvent(Millis, 0, @TimeEventProc, DWORD_PTR(Self), TIME_ONESHOT);
   FEvent := RTLEventCreate;
+  FTimeEvent := timeSetEvent(Millis, 0, @TimeEventProc, DWORD_PTR(Self), TIME_ONESHOT);
   if FTimeEvent = 0 then
     raise EOSError.Create('Call to timeSetEvent failed');
 end;
 
 destructor TSleeper.Destroy;
 begin
-  RTLEventDestroy(FEvent);
   if FTimeEvent <> 0 then
     timeKillEvent(FTimeEvent);
+  RTLEventDestroy(FEvent);
   inherited Destroy;
 end;
 
