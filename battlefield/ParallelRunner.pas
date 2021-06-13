@@ -69,7 +69,7 @@ type
   private
     FLock: TRTLCriticalSection;
     FGames: integer;
-    FThreads: array of PtrInt;
+    FThreads: array of TThreadID;
     FRunners: array of TEngineRunner;
     FOptions: REngineOptions;
     FFirstFactory: TUciEngineFactory;
@@ -173,7 +173,7 @@ begin
   FSecondFactory := TUciEngineFactory.Create(SecondEngineExe);
   for I := 0 to Jobs - 1 do
   begin
-    FThreads[I] := 0;
+    FThreads[I] := TThreadID(0);
     FRunners[I] := nil;
   end;
   for I := 0 to Jobs - 1 do
@@ -195,11 +195,11 @@ var
   I: integer;
 begin
   for I := Low(FThreads) to High(FThreads) do
-    if FThreads[I] <> 0 then
+    if FThreads[I] <> TThreadID(0) then
     begin
       WaitForThreadTerminate(FThreads[I], 0);
       CloseThread(FThreads[I]);
-      FThreads[I] := 0;
+      FThreads[I] := TThreadID(0);
     end;
 end;
 
@@ -242,12 +242,12 @@ end;
 
 destructor TParallelRunner.Destroy;
 var
-  Thread: integer;
+  Thread: TThreadID;
   Runner: TEngineRunner;
 begin
   DoneCriticalSection(FLock);
   for Thread in FThreads do
-    if Thread <> 0 then
+    if Thread <> TThreadID(0) then
       CloseThread(Thread);
   for Runner in FRunners do
     Runner.Free;
