@@ -12,10 +12,13 @@ jobs:
   build:
     strategy:
       matrix:
-        operating-system: [windows-latest, ubuntu-latest, macos-latest]
-        lazarus-versions: [stable, 2.0.10, 2.0.8, 1.8.4]
-    
-    runs-on: ${{ matrix.operating-system }}
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        lazarus: [stable, 2.0.10, 2.0.8, 1.8.4]
+        exclude:
+          - os: macos-latest
+            lazarus: 1.8.4
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +26,7 @@ jobs:
       - name: Install Lazarus
         uses: gcarreno/setup-lazarus@v3.0.2
         with:
-          lazarus-version: ${{ matrix.lazarus-versions }}
+          lazarus-version: ${{ matrix.lazarus }}
 
       - name: Build Battlefield
         working-directory: battlefield
