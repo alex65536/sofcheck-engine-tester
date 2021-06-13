@@ -1,5 +1,5 @@
 {
-  Copyright © 2020 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2020-2021 Alexander Kernozhitsky <sh200105@mail.ru>
 
   This library is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ var
   I: integer;
 begin
   Result.S[0] := GetTickCount64 * QWord(998244353);
-  Result.S[1] := GetCurrentThreadId * QWord(998244353);
+  Result.S[1] := QWord(GetCurrentThreadId) * QWord(998244353);
   Result.S[2] := QWord(MillisecondsBetween(Now, UnixEpoch)) * QWord(998244353);
   Result.S[3] := QWord(@Result) * QWord(998244353);
   for I := 0 to 99 do
