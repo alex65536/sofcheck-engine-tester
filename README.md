@@ -1,5 +1,10 @@
 # Utilities to test SoF Check chess engine
 
+[![Build Status][build-badge]][build-url]
+
+[build-badge]: https://github.com/alex65536/sofcheck-engine-tester/actions/workflows/build.yml/badge.svg?branch=master
+[build-url]: https://github.com/alex65536/sofcheck-engine-tester/actions/workflows/build.yml
+
 These utilities include:
 
 - [Battlefield](#battlefield)
