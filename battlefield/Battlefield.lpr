@@ -140,9 +140,26 @@ const
     WinRate: double;
     EloDif: double;
   begin
+    Write('Elo difference = ');
+    if (Draw = 0) and (Lose = 0) then
+    begin
+      rtcSetBold;
+      rtcSetFgColor(cclYellow);
+      WriteLn('infinity');
+      rtcResetStyle;
+      Exit;
+    end;
+    if (Win = 0) and (Draw = 0) then
+    begin
+      rtcSetBold;
+      rtcSetFgColor(cclYellow);
+      WriteLn('-infinity');
+      rtcResetStyle;
+      Exit;
+    end;
     WinRate := (Win + 0.5 * Draw) / (Win + Draw + Lose);
     EloDif := -Log10(1.0 / WinRate - 1.0) * 400.0;
-    WriteLn('Elo difference = ', EloDif: 0: 2);
+    WriteLn(EloDif: 0: 2);
   end;
 
 var
