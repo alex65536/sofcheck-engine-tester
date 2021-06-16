@@ -145,7 +145,7 @@ const
     begin
       rtcSetBold;
       rtcSetFgColor(cclYellow);
-      WriteLn('infinity');
+      WriteLn('oo');
       rtcResetStyle;
       Exit;
     end;
@@ -153,7 +153,7 @@ const
     begin
       rtcSetBold;
       rtcSetFgColor(cclYellow);
-      WriteLn('-infinity');
+      WriteLn('-oo');
       rtcResetStyle;
       Exit;
     end;
