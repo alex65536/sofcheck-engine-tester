@@ -4,6 +4,8 @@ PyField is an attempt to rewrite the [Battlefield](../README.md#battlefield) uti
 
 # Running PyField
 
+You will need Python 3.7 or later
+
 First, install the dependencies:
 
 ```
