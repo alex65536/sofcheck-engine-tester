@@ -1,6 +1,6 @@
 # What is PyField?
 
-PyField is an attempt to rewrite the [Battlefield](../README.md#battlefield) utility into Python.
+PyField is an attempt to rewrite the [Battlefield](../README.md#battlefield) utility in Python
 
 # Running PyField
 
@@ -31,7 +31,7 @@ experimental now, so some command-line arguments of Battlefield may be unsupport
 
 ## Cons
 
-- Battlefield is a single binary without any dependencies, but PyField required python plus some
+- Battlefield is a single binary without any dependencies, but PyField requires python plus some
   external dependencies
 - PyField is slow. Its speed is comparable to Battlefield in single-threaded tests, but it is
   reduced dramatically when running multithreaded. This is because of GIL and overall speed of
