@@ -161,6 +161,7 @@ type
     // Methods
     procedure NewGame; virtual;
     procedure StartInfinite; virtual;
+    procedure StartTime(Timer: TChessTimer); virtual;
     procedure StartFixedTime(TimeMsec: int64); virtual;
     procedure StartFixedDepth(Depth: int64); virtual;
     procedure Stop; virtual; // the engine won't stop before sending OnStop!
@@ -217,6 +218,7 @@ type
     // Overridden methods
     procedure NewGame; override;
     procedure StartInfinite; override;
+    procedure StartTime(Timer: TChessTimer); override;
     procedure StartFixedTime(TimeMsec: int64); override;
     procedure StartFixedDepth(Depth: int64); override;
     procedure Stop; override;
@@ -418,6 +420,12 @@ begin
 end;
 
 {$HINTS OFF}
+procedure TAbstractChessEngine.StartTime(Timer: TChessTimer);
+// Starts the analysis with current timer.
+begin
+  DoStart;
+end;
+
 procedure TAbstractChessEngine.StartFixedTime(TimeMsec: int64);
 // Starts the analysis with fixed time.
 begin
@@ -612,6 +620,15 @@ begin
   inherited StartInfinite;
   FProcess.SendCommand(TSetPositionCommand.Create(MoveChain, False));
   FProcess.SendCommand(TInfiniteAnalysisCommand.Create);
+end;
+
+procedure TUCIChessEngine.StartTime(Timer: TChessTimer);
+begin
+  if State.Active then
+    Exit;
+  inherited StartTime(Timer);
+  FProcess.SendCommand(TSetPositionCommand.Create(MoveChain, False));
+  FProcess.SendCommand(TTimeredAnalysisCommand.Create(Timer));
 end;
 
 procedure TUCIChessEngine.StartFixedTime(TimeMsec: int64);

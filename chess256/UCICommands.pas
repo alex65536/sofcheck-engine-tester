@@ -31,7 +31,7 @@ interface
 
 uses
   Classes, SysUtils, FGL, AvgLvlTree, EngineProcesses, MoveChains, ChessRules,
-  MoveConverters, EngineScores;
+  MoveConverters, EngineScores, ChessTime;
 
 const
   EmptyStr = '<empty>';
@@ -138,6 +138,18 @@ type
   public
     function GetCommandString: string; override;
     constructor Create(Depth: int64);
+  end;
+
+  { TTimeredAnalysisCommand }
+
+  TTimeredAnalysisCommand = class(TAnalysisCommand)
+    // "go wtime btime winc binc ..." command
+  private
+    FTimer: TChessTimer;
+  public
+    property Timer: TChessTimer read FTimer write FTimer;
+    constructor Create(ATimer: TChessTimer);
+    function GetCommandString: string; override;
   end;
 
   { TStopAnalysisCommand }
@@ -488,6 +500,47 @@ begin
   else
   if Length(S) = 5 then
     Result := S[5] in ['n', 'b', 'r', 'q'];
+end;
+
+{ TTimeredAnalysisCommand }
+
+constructor TTimeredAnalysisCommand.Create(ATimer: TChessTimer);
+begin
+  FTimer := ATimer;
+end;
+
+function TTimeredAnalysisCommand.GetCommandString: string;
+var
+  WhiteInc, BlackInc: TClockValue;
+  MoveLeft, MoveCount: integer;
+begin
+  Result := inherited GetCommandString;
+  if not Assigned(FTimer) then
+  begin
+    Result += ' infinite';
+    Exit;
+  end;
+  with FTimer.Clock, FTimer.TimeControl do
+  begin
+    // wtime
+    with Times[pcWhite] do
+      if Time <> InfVal then
+        Result += Format(' wtime %d', [ClockValueToMilliSeconds(Time)]);
+    // btime
+    with Times[pcBlack] do
+      if Time <> InfVal then
+        Result += Format(' btime %d', [ClockValueToMilliSeconds(Time)]);
+    // winc, binc
+    WhiteInc := WhiteTimeControl[Times[pcWhite].ItemIndex].AddTime;
+    BlackInc := BlackTimeControl[Times[pcBlack].ItemIndex].AddTime;
+    Result += Format(' winc %d binc %d', [ClockValueToMilliSeconds(WhiteInc),
+      ClockValueToMilliSeconds(BlackInc)]);
+    // movestogo
+    MoveLeft := Times[Active].MoveLeft;
+    MoveCount := TimeControls[Active].Items[Times[Active].ItemIndex].MoveCount;
+    if (MoveLeft > 0) and (MoveCount > 0) then
+      Result += Format(' movestogo %d', [MoveLeft]);
+  end;
 end;
 
 { TFixedDepthAnalysisCommand }

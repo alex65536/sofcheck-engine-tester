@@ -1,7 +1,7 @@
 {
   This file is part of Chess 256.
 
-  Copyright © 2016, 2018 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2016, 2018, 2021 Alexander Kernozhitsky <sh200105@mail.ru>
 
   Chess 256 is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
     This unit implements the chess clock system.
 }
 
-// TODO : Make a better timer!!! (maybe without using standard TTimer)
 unit ChessTime;
 
 {$I CompilerDirectives.inc}
@@ -39,6 +38,24 @@ type
     Value: int64;
   public
     class operator=(const A, B: TClockValue): Boolean;
+  end;
+
+  { TSimpleTimer }
+
+  TSimpleTimer = class
+  private
+    FLastTick: int64;
+    FEnabled: boolean;
+    FAccumulatedTicks: int64;
+
+    procedure SetEnabled(AValue: boolean);
+    procedure Start;
+    procedure Stop;
+  public
+    property Enabled: boolean read FEnabled write SetEnabled;
+    constructor Create(AEnabled: boolean);
+    function Tick: TClockValue;
+    procedure Reset(AEnabled: boolean);
   end;
 
   { RTimeControl }
@@ -136,6 +153,51 @@ type
     procedure ChangeMove(var Data: RChessClock);
     function GetInitialTime(Color: TPieceColor): RChessClock;
     procedure Clear;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { TChessTimer }
+
+  TChessTimer = class
+  private
+    FInitialColor: TPieceColor;
+    FOnChange: TNotifyEvent;
+    FOnTimeForfeit: TTimeForfeitEvent;
+    FOnUpdate: TNotifyEvent;
+    FPaused: boolean;
+    FTimeControl: TTimeControlPair;
+    FTimeForfeit: boolean;
+    FTimeForfeitWinner: TGameWinner;
+    FTimers: array [TPieceColor] of TSimpleTimer;
+    FClock: RChessClock;
+    // Getters / Setters
+    procedure SetClock(AValue: RChessClock);
+    procedure SetPaused(AValue: boolean);
+    // Event handlers
+    procedure Changer(Sender: TObject);
+  protected
+    function IsTimeForfeit: boolean;
+    function CanResume: boolean;
+    procedure DoChange;
+    procedure DoTimeForfeit(Color: TPieceColor);
+    procedure Pause;
+    procedure Resume;
+  public
+    // Properties
+    property TimeControl: TTimeControlPair read FTimeControl;
+    property Paused: boolean read FPaused write SetPaused;
+    property Clock: RChessClock read FClock write SetClock;
+    property TimeForfeit: boolean read IsTimeForfeit;
+    property TimeForfeitWinner: TGameWinner read FTimeForfeitWinner;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnUpdate: TNotifyEvent read FOnUpdate write FOnUpdate;
+    property OnTimeForfeit: TTimeForfeitEvent read FOnTimeForfeit write FOnTimeForfeit;
+    property InitialColor: TPieceColor read FInitialColor write FInitialColor;
+    // Methods
+    procedure FlipClock;
+    procedure Restart;
+    procedure Tick;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -388,6 +450,60 @@ function ClockValueToMilliSeconds(Val: TClockValue): int64;
   // Converts TClockValue to milliseconds.
 begin
   Result := Val.Value;
+end;
+
+{ TSimpleTimer }
+
+procedure TSimpleTimer.SetEnabled(AValue: boolean);
+begin
+  if FEnabled = AValue then Exit;
+  if AValue then
+    Start
+  else
+    Stop;
+end;
+
+procedure TSimpleTimer.Start;
+// Restarts the timer.
+begin
+  FLastTick := int64(GetTickCount64);
+  FEnabled := True;
+end;
+
+procedure TSimpleTimer.Stop;
+// Pauses the timer.
+begin
+  FAccumulatedTicks += int64(GetTickCount64) - FLastTick;
+  FEnabled := False;
+end;
+
+constructor TSimpleTimer.Create(AEnabled: boolean);
+begin
+  Reset(AEnabled);
+end;
+
+function TSimpleTimer.Tick: TClockValue;
+// Returns the amount of time passed on the timer from the recent Tick() call.
+var
+  Msecs, CurTick: int64;
+begin
+  Msecs := FAccumulatedTicks;
+  FAccumulatedTicks := 0;
+  if FEnabled then
+  begin
+    CurTick := int64(GetTickCount64);
+    Msecs += CurTick - FLastTick;
+    FLastTick := CurTick;
+  end;
+  Result := MilliSecondsToClockValue(Msecs);
+end;
+
+procedure TSimpleTimer.Reset(AEnabled: boolean);
+// Re-creates the timer.
+begin
+  FLastTick := int64(GetTickCount64);
+  FAccumulatedTicks := 0;
+  FEnabled := AEnabled;
 end;
 
 { TClockValue }
@@ -656,6 +772,159 @@ destructor TTimeControlPair.Destroy;
 begin
   FreeAndNil(FTimeControls[pcWhite]);
   FreeAndNil(FTimeControls[pcBlack]);
+  inherited Destroy;
+end;
+
+{ TChessTimer }
+
+procedure TChessTimer.SetClock(AValue: RChessClock);
+begin
+  if FClock = AValue then
+    Exit;
+  FClock := AValue;
+  DoChange;
+end;
+
+procedure TChessTimer.SetPaused(AValue: boolean);
+begin
+  if FPaused = AValue then
+    Exit;
+  FPaused := AValue;
+  DoChange;
+end;
+
+procedure TChessTimer.Changer(Sender: TObject);
+begin
+  Restart;
+end;
+
+function TChessTimer.IsTimeForfeit: boolean;
+  // Returns True if the active side forfeits on time.
+begin
+  Result := ChessTime.IsTimeForfeit(FClock);
+end;
+
+function TChessTimer.CanResume: boolean;
+  // Returns True if timer can go.
+begin
+  Result := not (IsTimeForfeit or IsInfinite(FClock));
+end;
+
+procedure TChessTimer.DoChange;
+begin
+  // update pausing/resuming
+  if FPaused then
+    Pause
+  else
+    Resume;
+  // event handlers
+  if Assigned(FOnChange) then
+    FOnChange(Self);
+  if Assigned(FOnUpdate) then
+    FOnUpdate(Self);
+  if IsTimeForfeit then
+    DoTimeForfeit(FClock.Active);
+end;
+
+procedure TChessTimer.DoTimeForfeit(Color: TPieceColor);
+// Event handler when forfeit on time.
+begin
+  if FTimeForfeit then
+    Exit;
+  FTimeForfeit := True;
+  if Color = pcWhite then
+    FTimeForfeitWinner := gwBlack
+  else
+    FTimeForfeitWinner := gwWhite;
+  Pause;
+  if Assigned(FOnTimeForfeit) then
+    FOnTimeForfeit(Self, Color);
+end;
+
+procedure TChessTimer.Pause;
+// Pauses the timers.
+begin
+  FTimers[pcWhite].Enabled := False;
+  FTimers[pcBlack].Enabled := False;
+end;
+
+procedure TChessTimer.Resume;
+// Resumes the timers.
+begin
+  if CanResume then
+  begin
+    FTimers[FClock.Active].Enabled := True;
+    FTimers[not FClock.Active].Enabled := False;
+  end
+  else
+    Pause;
+end;
+
+procedure TChessTimer.FlipClock;
+// Flips the clock (when active side has made a move).
+begin
+  if IsTimeForfeit then
+    Exit;
+  Tick;
+  TimeControl.ChangeMove(FClock);
+  DoChange;
+end;
+
+procedure TChessTimer.Restart;
+// Restarts the timer.
+var
+  C: TPieceColor;
+begin
+  FTimeForfeit := False;
+  FTimeForfeitWinner := gwNone;
+  FClock := TimeControl.GetInitialTime(FInitialColor);
+  for C := Low(TPieceColor) to High(TPieceColor) do
+    FTimers[C].Reset(False);
+  DoChange;
+end;
+
+procedure TChessTimer.Tick;
+// Handles the updates from the time when Tick was called previously.
+var
+  HasChange: boolean;
+  TickAmount: TClockValue;
+  C: TPieceColor;
+begin
+  HasChange := False;
+  for C := Low(TPieceColor) to High(TPieceColor) do
+  begin
+    TickAmount := FTimers[C].Tick;
+    if ClockValueToMilliSeconds(TickAmount) <> 0 then
+    begin
+      HasChange := True;
+      Decrement(FClock.Times[C], TickAmount);
+    end;
+  end;
+  if HasChange then
+    DoChange;
+end;
+
+constructor TChessTimer.Create;
+var
+  C: TPieceColor;
+begin
+  FInitialColor := pcWhite;
+  FPaused := True;
+  FTimeForfeit := False;
+  FTimeControl := TTimeControlPair.Create;
+  FTimeControl.OnChange := @Changer;
+  for C := Low(TPieceColor) to High(TPieceColor) do
+    FTimers[C] := TSimpleTimer.Create(False);
+  Restart;
+end;
+
+destructor TChessTimer.Destroy;
+var
+  C: TPieceColor;
+begin
+  for C := Low(TPieceColor) to High(TPieceColor) do
+    FreeAndNil(FTimers[C]);
+  FreeAndNil(FTimeControl);
   inherited Destroy;
 end;
 

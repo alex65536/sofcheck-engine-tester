@@ -16,7 +16,7 @@
     </CompilerOptions>
     <Description Value="Chess library. The sources are taken from Chess256 project and slightly adapted. This library supports FEN to save and load boards, PGN to save and load games, and UCI to communicate with chess engines."/>
     <License Value="GPL 3+"/>
-    <Version Minor="13" Release="5"/>
+    <Version Minor="13" Release="6"/>
     <Files Count="21">
       <Item1>
         <Filename Value="BoardHashes.pas"/>
