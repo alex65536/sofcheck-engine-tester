@@ -351,9 +351,9 @@ begin
       if Timer.TimeForfeitWinner <> gwNone then
       begin
         if Timer.TimeForfeitWinner = gwWhite then
-          ForfeitColor := pcWhite
+          ForfeitColor := pcBlack
         else
-          ForfeitColor := pcBlack;
+          ForfeitColor := pcWhite;
         WriteLn(StdErr, 'Engine "' + Engines[ForfeitColor].FileName +
           '" forfeits on time :(');
         CurGame.Winner := Timer.TimeForfeitWinner;
