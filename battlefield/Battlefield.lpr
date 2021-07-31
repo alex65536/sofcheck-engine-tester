@@ -76,7 +76,7 @@ const
     WriteLn('Notes on time control format. It must consist of one or more stages');
     WriteLn('separated by ":". Each stage must have one of the following formats:');
     WriteLn('T, M/T, T+I or M/T+I, where M is the number of moves in the stage, T');
-    WriteLn('is the amount of time in seconds given for the stage, and I is the
+    WriteLn('is the amount of time in seconds given for the stage, and I is the');
     WriteLn('increment in seconds per each move. Note that the last stage is');
     WriteLn('repeated. Infinite stages are not allowed, even though they are');
     WriteLn('allowed by PGN specs. You can also specify different time control for');
