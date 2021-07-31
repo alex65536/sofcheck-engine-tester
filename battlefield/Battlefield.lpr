@@ -241,8 +241,8 @@ begin
       if Param = ParamCount then
         ShowError('DEPTH expected');
       HasOptions := True;
-      Options.TimeControlKind := eoDepth;
-      Options.TimeControl := StrToInt(ParamStr(Param + 1));
+      Options.TimeControlKind := eoFixedDepth;
+      Options.FixedDepth := StrToInt(ParamStr(Param + 1));
       Inc(Param, 2);
       continue;
     end;
@@ -253,8 +253,8 @@ begin
       if Param = ParamCount then
         ShowError('TIME expected');
       HasOptions := True;
-      Options.TimeControlKind := eoTime;
-      Options.TimeControl := StrToInt(ParamStr(Param + 1));
+      Options.TimeControlKind := eoFixedTime;
+      Options.FixedTime := StrToInt(ParamStr(Param + 1));
       Inc(Param, 2);
       continue;
     end;
@@ -312,8 +312,14 @@ begin
     ShowError('GAMES must be positive');
   if Jobs < 0 then
     ShowError('JOBS must be non-negative');
-  if Options.TimeControl <= 0 then
-    ShowError('DEPTH and TIME must be positive');
+  case Options.TimeControlKind of
+    eoFixedTime:
+      if Options.FixedTime <= 0 then
+        ShowError('TIME must be positive');
+    eoFixedDepth:
+      if Options.FixedDepth <= 0 then
+        ShowError('DEPTH must be positive');
+  end;
   if Options.ScoreThreshold < 0 then
     ShowError('SCORE must be non-negative');
 

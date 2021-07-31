@@ -32,11 +32,12 @@ type
 
   TGameVector = specialize TVector<TScoredGameNotation>;
 
-  TEngineTimeControlKind = (eoTime, eoDepth);
+  TEngineTimeControlKind = (eoFixedTime, eoFixedDepth);
 
   REngineOptions = record
     TimeControlKind: TEngineTimeControlKind;
-    TimeControl: int64;
+    FixedTime: int64;  // for eoFixedTime
+    FixedDepth: int64;  // for eoFixedDepth
     // Terminate the game when both sides agree that one of them wins with
     // Score >= ScoreThreshold. Must be set to zero for no threshold.
     ScoreThreshold: integer;
@@ -220,11 +221,11 @@ var
     TimeBudget := MaxInt;
     Engine.OnStop := @EngineStop;
     case Options.TimeControlKind of
-      eoDepth: Engine.StartFixedDepth(Options.TimeControl);
-      eoTime:
+      eoFixedDepth: Engine.StartFixedDepth(Options.FixedDepth);
+      eoFixedTime:
       begin
-        Engine.StartFixedTime(Options.TimeControl);
-        TimeBudget := Options.TimeControl + 500;
+        Engine.StartFixedTime(Options.FixedTime);
+        TimeBudget := Options.FixedTime + 500;
       end
       else
         raise Exception.Create('Some time control types are not supported');
