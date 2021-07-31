@@ -38,7 +38,7 @@ uses {$IFDEF UNIX}
   ChessTime;
 
 const
-  AppVersionCodename = 'The Spectral Torch';
+  AppVersionCodename = 'The Blades of Grass';
 
   procedure ShowHelp(Banner: boolean = True);
   begin
