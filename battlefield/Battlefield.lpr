@@ -34,7 +34,8 @@ uses {$IFDEF UNIX}
   OpeningBook,
   VersionInfo,
   spe,
-  Math;
+  Math,
+  ChessTime;
 
 const
   AppVersionCodename = 'The Spectral Torch';
@@ -48,8 +49,8 @@ const
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
     WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] [-r FILE]');
-    WriteLn('                   -g GAMES [-d DEPTH] [-t TIMES] [-f FEN_FILE]');
-    WriteLn('                   [-s SCORE] ENGINE1 ENGINE2');
+    WriteLn('                   -g GAMES [-d DEPTH] [-t TIME] [-c CONTROL]');
+    WriteLn('                   [-f FEN_FILE] [-s SCORE] ENGINE1 ENGINE2');
     WriteLn;
     WriteLn('  -h           Show this help and exit');
     WriteLn('  -v           Show version info and exit');
@@ -59,15 +60,33 @@ const
     WriteLn('  -r FILE      Write the positions occurred in the game, in format');
     WriteLn('               recognized by SoFCheck''s MakeDataset');
     WriteLn('  -g GAMES     Number of games to run');
-    WriteLn('  -d DEPTH     Run engines on fixed depth. You must specify either -d');
-    WriteLn('               or -t');
+    WriteLn('  -d DEPTH     Run engines on fixed depth. You must specify one of -d,');
+    WriteLn('               -t or -c');
     WriteLn('  -t TIME      Run engines on fixed time (in milliseconds) per move.');
-    WriteLn('               You must specify either -d or -t');
+    WriteLn('               You must specify one of -d, -t or -c');
+    WriteLn('  -c CONTROL   Run engines on time control CONTROL. The time control');
+    WriteLn('               format is the same as in PGN files (see below for more');
+    WriteLn('               details). You must specify one of -d, -t or -c');
     WriteLn('  -f FEN_FILE  Start games from positions found in FEN_FILE. By');
     WriteLn('               default, the games are started from positions in the');
     WriteLn('               built-in opening book');
     WriteLn('  -s SCORE     Terminate the game after both sides agree that the');
     WriteLn('               score is larger than SCORE centipawns for the same side');
+    WriteLn;
+    WriteLn('Notes on time control format. It must consist of one or more stages');
+    WriteLn('separated by ":". Each stage must have one of the following formats:');
+    WriteLn('T, M/T, T+I or M/T+I, where M is the number of moves in the stage, T');
+    WriteLn('is the amount of time in seconds given for the stage, and I is the
+    WriteLn('increment in seconds per each move. Note that the last stage is');
+    WriteLn('repeated. Infinite stages are not allowed, even though they are');
+    WriteLn('allowed by PGN specs. You can also specify different time control for');
+    WriteLn('white and black (though using this feature is disregarded). To do');
+    WriteLn('this, you must separate time control for white and black with "|".');
+    WriteLn;
+    WriteLn('For example, "40/900+5:900+5" means 15 minutes for 40 moves plus 5');
+    WriteLn('seconds each move. After 40 moves pass, you are given 15 minutes for');
+    WriteLn('the rest of the game plus 5 seconds each move. And "300|240" means 5');
+    WriteLn('minutes per game for white, and 4 minutes per game for black.');
   end;
 
   procedure ShowError(const Error: string);
@@ -162,6 +181,27 @@ const
     WriteLn(EloDif: 0: 2);
   end;
 
+  function IsTimeControlValid(const S: string): boolean;
+  var
+    Control: TTimeControlPair;
+  begin
+    Control := TTimeControlPair.Create;
+    try
+      try
+        Control.TimeControlString := S;
+      except
+        on E: ETimeControlStringRead do
+        begin
+          FreeAndNil(Control);
+          Exit(False);
+        end;
+      end;
+      Result := not Control.IsInfinite;
+    finally
+      FreeAndNil(Control);
+    end;
+  end;
+
 var
   FirstEngine: string = '';
   SecondEngine: string = '';
@@ -237,7 +277,7 @@ begin
     if ParamStr(Param) = '-d' then
     begin
       if HasOptions then
-        ShowError('-d or -t is already specified');
+        ShowError('-d, -t or -c is already specified');
       if Param = ParamCount then
         ShowError('DEPTH expected');
       HasOptions := True;
@@ -249,12 +289,24 @@ begin
     if ParamStr(Param) = '-t' then
     begin
       if HasOptions then
-        ShowError('-d or -t is already specified');
+        ShowError('-d, -t or -c is already specified');
       if Param = ParamCount then
         ShowError('TIME expected');
       HasOptions := True;
       Options.TimeControlKind := eoFixedTime;
       Options.FixedTime := StrToInt(ParamStr(Param + 1));
+      Inc(Param, 2);
+      continue;
+    end;
+    if ParamStr(Param) = '-c' then
+    begin
+      if HasOptions then
+        ShowError('-d, -t or -c is already specified');
+      if Param = ParamCount then
+        ShowError('CONTROL expected');
+      HasOptions := True;
+      Options.TimeControlKind := eoTimeControl;
+      Options.TimeControl := ParamStr(Param + 1);
       Inc(Param, 2);
       continue;
     end;
@@ -307,7 +359,7 @@ begin
   if SecondEngine = '' then
     ShowError('ENGINE2 not specified');
   if not HasOptions then
-    ShowError('DEPTH or TIME not specified');
+    ShowError('DEPTH, TIME or CONTROL not specified');
   if Games <= 0 then
     ShowError('GAMES must be positive');
   if Jobs < 0 then
@@ -319,6 +371,9 @@ begin
     eoFixedDepth:
       if Options.FixedDepth <= 0 then
         ShowError('DEPTH must be positive');
+    eoTimeControl:
+      if not IsTimeControlValid(Options.TimeControl) then
+        ShowError('CONTROL "' + Options.TimeControl + '" is either invalid or infinite');
   end;
   if Options.ScoreThreshold < 0 then
     ShowError('SCORE must be non-negative');

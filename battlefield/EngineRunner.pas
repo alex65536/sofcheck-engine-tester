@@ -25,19 +25,20 @@ interface
 
 uses
   Classes, SysUtils, ChessRules, ChessEngines, gvector, MoveConverters,
-  OpeningBook, EngineScores, GameNotation;
+  OpeningBook, EngineScores, GameNotation, ChessTime;
 
 type
   TEngineMatchWinner = (ewFirst, ewDraw, ewSecond);
 
   TGameVector = specialize TVector<TScoredGameNotation>;
 
-  TEngineTimeControlKind = (eoFixedTime, eoFixedDepth);
+  TEngineTimeControlKind = (eoFixedTime, eoFixedDepth, eoTimeControl);
 
   REngineOptions = record
     TimeControlKind: TEngineTimeControlKind;
     FixedTime: int64;  // for eoFixedTime
     FixedDepth: int64;  // for eoFixedDepth
+    TimeControl: string;  // for eoTimeControl
     // Terminate the game when both sides agree that one of them wins with
     // Score >= ScoreThreshold. Must be set to zero for no threshold.
     ScoreThreshold: integer;
@@ -208,16 +209,18 @@ var
   CurGame: TScoredGameNotation;
   Engines: array [TPieceColor] of TAbstractChessEngine;
   GameResult: RGameResult;
-  Color: TPieceColor;
+  Color, ForfeitColor: TPieceColor;
   Move: RChessMove;
   UciConverter: TUCIMoveConverter;
   WinPredicts: array [TPieceColor] of TGameWinner;
   RunOk: boolean;
+  Timer: TChessTimer;
 
   function RunEngine(Engine: TAbstractChessEngine): boolean;
   var
     TimeBudget: integer;
   begin
+    Timer.Tick;
     TimeBudget := MaxInt;
     Engine.OnStop := @EngineStop;
     case Options.TimeControlKind of
@@ -226,11 +229,18 @@ var
       begin
         Engine.StartFixedTime(Options.FixedTime);
         TimeBudget := Options.FixedTime + 500;
+      end;
+      eoTimeControl:
+      begin
+        Engine.StartTime(Timer);
+        TimeBudget :=
+          ClockValueToMilliSeconds(Timer.Clock.Times[Timer.Clock.Active].Time) + 500;
       end
       else
         raise Exception.Create('Some time control types are not supported');
     end;
     Result := Engine.WaitForStop(TimeBudget);
+    Timer.Tick;
   end;
 
   procedure RestartEngine(Engine: TAbstractChessEngine);
@@ -247,8 +257,18 @@ var
     end;
   end;
 
+  procedure SetupTimer;
+  begin
+    Timer.InitialColor := CurGame.Chain.Boards[CurGame.Chain.Count - 1].MoveSide;
+    if Options.TimeControlKind = eoTimeControl then
+      Timer.TimeControl.TimeControlString := Options.TimeControl;
+    Timer.Restart;
+    Timer.Paused := False;
+  end;
+
 begin
   UciConverter := nil;
+  Timer := nil;
   CurGame := TScoredGameNotation.Create;
   WinPredicts[pcWhite] := gwNone;
   WinPredicts[pcBlack] := gwNone;
@@ -256,6 +276,8 @@ begin
     FBook.FillOpening(CurGame.Chain);
     CurGame.PadZeroScores;
     UciConverter := TUCIMoveConverter.Create;
+    Timer := TChessTimer.Create;
+    SetupTimer;
     FFirstEngine.MoveChain.Assign(CurGame.Chain);
     FSecondEngine.MoveChain.Assign(CurGame.Chain);
     FFirstEngine.NewGame;
@@ -274,13 +296,18 @@ begin
     CurGame.BlackName := Engines[pcBlack].Name + ' at ' + Engines[pcBlack].FileName;
     while True do
     begin
+      // Check if the game is already terminated
       GameResult := CurGame.Chain.GetGameResult;
       if GameResult.Winner <> gwNone then
       begin
         CurGame.Winner := GameResult.Winner;
         break;
       end;
+
+      // Set up current color
       Color := CurGame.Chain.Boards[CurGame.Chain.Count - 1].MoveSide;
+
+      // Launch the engine
       RunOk := RunEngine(Engines[Color]);
       if Engines[Color].Terminated or (not RunOk) then
       begin
@@ -299,6 +326,8 @@ begin
         RestartEngine(Engines[Color]);
         break;
       end;
+
+      // Make the move chosen by the engine
       Move := FEngineResult.BestMove;
       try
         CurGame.AddMove(Move, Engines[Color].State.Score);
@@ -316,6 +345,22 @@ begin
           break;
         end;
       end;
+
+      // Flip the timer
+      Timer.FlipClock;
+      if Timer.TimeForfeitWinner <> gwNone then
+      begin
+        if Timer.TimeForfeitWinner = gwWhite then
+          ForfeitColor := pcWhite
+        else
+          ForfeitColor := pcBlack;
+        WriteLn(StdErr, 'Engine "' + Engines[ForfeitColor].FileName +
+          '" forfeits on time :(');
+        CurGame.Winner := Timer.TimeForfeitWinner;
+        break;
+      end;
+
+      // Stop game by prediction, if applicable
       WinPredicts[Color] := PredictGameWinner(Engines[Color].State.Score,
         Options.ScoreThreshold);
       if (WinPredicts[pcWhite] = WinPredicts[pcBlack]) and
@@ -325,6 +370,8 @@ begin
         break;
       end;
     end;
+
+    // Set the result based on how the game was terminated
     case CurGame.Winner of
       gwWhite: if SwitchSides then
           Result := ewSecond
@@ -339,9 +386,11 @@ begin
   except
     FreeAndNil(CurGame);
     FreeAndNil(UciConverter);
+    FreeAndNil(Timer);
     raise;
   end;
   FreeAndNil(UciConverter);
+  FreeAndNil(Timer);
   FGames.PushBack(CurGame);
 end;
 

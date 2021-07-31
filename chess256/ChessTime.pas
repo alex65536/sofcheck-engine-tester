@@ -64,6 +64,7 @@ type
     StartTime, AddTime: TClockValue;
     MoveCount: integer;
     class operator=(A, B: RTimeControl): Boolean;
+    function IsInfinite: boolean;
   end;
   // StartTime = Infinity -> no time control
   // MoveCount = -1 -> for the rest of the game
@@ -126,6 +127,7 @@ type
     // Methods
     procedure ChangeMove(var Data: RClockData);
     function GetInitialTime: RClockData;
+    function IsInfinite: boolean;
     procedure Clear;
     constructor Create;
     destructor Destroy; override;
@@ -152,6 +154,7 @@ type
     // Methods
     procedure ChangeMove(var Data: RChessClock);
     function GetInitialTime(Color: TPieceColor): RChessClock;
+    function IsInfinite: boolean;
     procedure Clear;
     constructor Create;
     destructor Destroy; override;
@@ -515,10 +518,16 @@ end;
 
 { RTimeControl }
 
-class operator RTimeControl.=(A, B: RTimeControl): boolean;
+class operator RTimeControl. = (A, B: RTimeControl): Boolean;
 begin
   Result := (A.StartTime = B.StartTime) and (A.AddTime = B.AddTime) and
     (A.MoveCount = B.MoveCount);
+end;
+
+function RTimeControl.IsInfinite: boolean;
+// Returns True if the time control is infinite
+begin
+  Result := (StartTime = InfVal);
 end;
 
 { RClockData }
@@ -646,6 +655,18 @@ begin
   end;
 end;
 
+function TTimeControl.IsInfinite: boolean;
+// Returns True if the time control can become infinite
+var
+  I: integer;
+begin
+  Result := True;
+  for I := 0 to FList.Count - 1 do
+    if FList[I].IsInfinite then
+      Exit;
+  Result := False;
+end;
+
 procedure TTimeControl.Clear;
 // Clears the time control.
 begin
@@ -750,6 +771,12 @@ begin
   Result.Times[pcWhite] := FTimeControls[pcWhite].GetInitialTime;
   Result.Times[pcBlack] := FTimeControls[pcBlack].GetInitialTime;
   Result.Active := Color;
+end;
+
+function TTimeControlPair.IsInfinite: boolean;
+// Returns True if the time control can become infinite for one of the sides
+begin
+  Result := FTimeControls[pcWhite].IsInfinite or FTimeControls[pcBlack].IsInfinite;
 end;
 
 procedure TTimeControlPair.Clear;
