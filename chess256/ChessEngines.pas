@@ -554,7 +554,7 @@ begin
   begin
     if not FProcess.Process.Running then
       Exit;
-    Sleep(1);
+    PreciseSleep(1);
   end;
   Result := False;
 end;
