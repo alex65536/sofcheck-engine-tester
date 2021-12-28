@@ -240,7 +240,7 @@ begin
     if ParamStr(Param) = '-v' then
     begin
       WriteLn('BattleField version ' + GetAppVersion + ' "' + AppVersionCodename + '"');
-      WriteLn('Copyright (C) 2021 Alexander Kernozhitsky');
+      WriteLn('Copyright (C) 2020-2021 Alexander Kernozhitsky');
       WriteLn;
       WriteLn('Build time: ' + GetAppBuildTime);
       WriteLn('Target: ' + GetAppTarget);
@@ -248,6 +248,9 @@ begin
       WriteLn;
       WriteLn('This is free software; see the source for copying conditions.  There is NO');
       WriteLn('warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.');
+      WriteLn;
+      WriteLn('BattleField uses Graham2014-1F.cgb opening book by Graham Banks.');
+      WriteLn('Source: https://www.talkchess.com/forum3/viewtopic.php?t=50541#p549216.');
       Halt(0);
     end;
     if ParamStr(Param) = '-q' then
