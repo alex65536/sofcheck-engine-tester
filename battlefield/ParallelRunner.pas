@@ -165,7 +165,6 @@ constructor TParallelRunner.Create(Games: integer;
 var
   I: integer;
   Winner: TEngineMatchWinner;
-  DataPtr: PThreadFuncData;
 begin
   if Jobs = 0 then
     Jobs := GetSystemThreadCount;
@@ -193,8 +192,11 @@ begin
 end;
 
 procedure TParallelRunner.Start;
+var
+  I: integer;
+  DataPtr: PThreadFuncData;
 begin
-  for I := 0 to Jobs - 1 do
+  for I := Low(FThreads) to High(FThreads) do
   begin
     if not Assigned(FRunners[I]) then
       continue;
