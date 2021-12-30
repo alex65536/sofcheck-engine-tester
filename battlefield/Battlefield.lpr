@@ -48,7 +48,7 @@ const
       WriteLn;
       WriteLn('BattleField - tool to run micro-matches between chess engines');
     end;
-    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o PGN_FILE] [-r FILE]');
+    WriteLn('Usage: battlefield [-h] [-v] [-q] [-j JOBS] [-o FILE] [-r FILE]');
     WriteLn('                   -g GAMES [-d DEPTH] [-t TIME] [-c CONTROL]');
     WriteLn('                   [-f FEN_FILE] [-s SCORE] ENGINE1 ENGINE2');
     WriteLn;
@@ -56,9 +56,8 @@ const
     WriteLn('  -v           Show version info and exit');
     WriteLn('  -q           Do not show progress');
     WriteLn('  -j JOBS      Specify number of games to run simultaneoulsly');
-    WriteLn('  -o PGN_FILE  Write PGN of the games into PGN_FILE');
-    WriteLn('  -r FILE      Write the positions occurred in the game, in format');
-    WriteLn('               recognized by SoFCheck''s MakeDataset');
+    WriteLn('  -o FILE      Write the played games into FILE, in PGN format');
+    WriteLn('  -r FILE      Write the played games into FILE, in SoFGameSet format');
     WriteLn('  -g GAMES     Number of games to run');
     WriteLn('  -d DEPTH     Run engines on fixed depth. You must specify one of -d,');
     WriteLn('               -t or -c');
@@ -87,6 +86,9 @@ const
     WriteLn('seconds each move. After 40 moves pass, you are given 15 minutes for');
     WriteLn('the rest of the game plus 5 seconds each move. And "300|240" means 5');
     WriteLn('minutes per game for white, and 4 minutes per game for black.');
+    WriteLn;
+    WriteLn('To learn about SoFGameSet format, see the following specification:');
+    WriteLn('https://github.com/alex65536/sofcheck/blob/master/docs/gameset.md');
   end;
 
   procedure ShowError(const Error: string);
@@ -206,7 +208,7 @@ var
   FirstEngine: string = '';
   SecondEngine: string = '';
   PgnFile: string = '';
-  DatasetFile: string = '';
+  GamesetFile: string = '';
   FenFile: string = '';
   Options: REngineOptions;
   HasOptions: boolean = False;
@@ -316,7 +318,7 @@ begin
     if ParamStr(Param) = '-o' then
     begin
       if Param = ParamCount then
-        ShowError('PGN_FILE expected');
+        ShowError('FILE expected');
       PgnFile := ParamStr(Param + 1);
       Inc(Param, 2);
       continue;
@@ -325,7 +327,7 @@ begin
     begin
       if Param = ParamCount then
         ShowError('FILE expected');
-      DatasetFile := ParamStr(Param + 1);
+      GamesetFile := ParamStr(Param + 1);
       Inc(Param, 2);
       continue;
     end;
@@ -395,11 +397,11 @@ begin
       Stream := TFileStream.Create(PgnFile, fmCreate or fmOpenWrite);
       Runner.SaveGamesAsPgn(Stream);
     end;
-    if DatasetFile <> '' then
+    if GamesetFile <> '' then
     begin
       FreeAndNil(Stream);
-      Stream := TFileStream.Create(DatasetFile, fmCreate or fmOpenWrite);
-      Runner.SaveGamesAsDataset(Stream);
+      Stream := TFileStream.Create(GamesetFile, fmCreate or fmOpenWrite);
+      Runner.SaveGamesAsGameset(Stream);
     end;
     WriteLn('Wins: ', Runner.FirstWins, ', Loses: ', Runner.SecondWins,
       ', Draws: ', Runner.Draws);

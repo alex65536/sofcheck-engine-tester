@@ -19,7 +19,7 @@
 }
 unit GameNotation;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}{$COperators On}
 
 interface
 
@@ -50,7 +50,7 @@ type
     destructor Destroy; override;
 
     function ToPGNString: string;
-    function ToDataset(GameId: integer): string;
+    function ToGameset(const GameLabel: string): string;
   end;
 
   { TScoredGameNotation }
@@ -135,23 +135,29 @@ begin
   end;
 end;
 
-function TGameNotation.ToDataset(GameId: integer): string;
+function TGameNotation.ToGameset(const GameLabel: string): string;
 const
   WinnerStr: array [TGameWinner] of string = ('?', 'W', 'B', 'D');
 var
-  Board: TChessBoard;
-  I: integer;
+  Converter: TUCIMoveConverter;
 begin
-  Board := TChessBoard.Create(False);
+  Converter := TUCIMoveConverter.Create(Chain.Boards[-1]);
   try
-    Result := 'game ' + WinnerStr[Winner] + ' ' + IntToStr(GameId) + LineEnding;
-    for I := -1 to Chain.Count - 1 do
-    begin
-      Board.RawBoard := Chain.Boards[I];
-      Result := Result + 'board ' + Board.FENString + LineEnding;
-    end;
+    Result := 'game ' + WinnerStr[Winner] + ' ' + GameLabel + LineEnding;
+    Result += 'title ' + WhiteName + ' vs ' + BlackName + LineEnding;
+    if Chain.Boards[-1] = GetInitialPosition then
+      Result += 'start' + LineEnding
+    else
+      with TChessBoard.Create(False, False) do
+        try
+          RawBoard := Chain.Boards[-1];
+          Result += 'board ' + FENString + LineEnding;
+        finally
+          Free;
+        end;
+    Result += 'moves ' + Chain.ConvertToString(Converter, ' ') + LineEnding;
   finally
-    FreeAndNil(Board);
+    FreeAndNil(Converter);
   end;
 end;
 

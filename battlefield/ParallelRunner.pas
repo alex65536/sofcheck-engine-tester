@@ -53,7 +53,7 @@ type
 
     // Run this only after the threads joined
     procedure SaveGamesAsPGN(Stream: TStream);
-    procedure SaveGamesAsDataset(Stream: TStream);
+    procedure SaveGamesAsGameset(Stream: TStream);
 
     destructor Destroy; override;
 
@@ -223,19 +223,16 @@ begin
     end;
 end;
 
-procedure TParallelRunner.SaveGamesAsDataset(Stream: TStream);
+procedure TParallelRunner.SaveGamesAsGameset(Stream: TStream);
 var
   Runner: TEngineRunner;
   I: integer;
   S: string;
-  GameId: integer;
 begin
-  GameId := 0;
   for Runner in FRunners do
     for I := 0 to Runner.GameCount - 1 do
     begin
-      Inc(GameId);
-      S := Runner.Games[I].ToDataset(GameId) + LineEnding;
+      S := Runner.Games[I].ToGameset('-') + LineEnding;
       Stream.Write(PChar(S)^, Length(S));
     end;
 end;
