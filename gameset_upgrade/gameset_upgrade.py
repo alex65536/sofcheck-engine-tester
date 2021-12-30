@@ -95,7 +95,7 @@ for game in tqdm(GameReader(sys.stdin)):
     # Filter unused commands
     game = [line
             for line in game
-            if line.split()[0] in ('start', 'board', 'moves')]
+            if line.split()[0] in ('game', 'start', 'board', 'moves')]
     if len(game) < 2:
         raise RuntimeError('Game is too small')
     if game[1] == 'start':
