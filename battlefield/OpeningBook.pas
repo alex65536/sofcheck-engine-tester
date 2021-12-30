@@ -186,6 +186,7 @@ end;
 
 procedure TAbstractOpeningBook.DoAssign(Source: TAbstractOpeningBook);
 begin
+  Source := Source;  // to prevent compiler hints
 end;
 
 { TRandomizedOpeningBook }
