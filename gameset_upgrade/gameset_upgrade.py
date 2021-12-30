@@ -18,6 +18,12 @@ from chess import Board, Move
 import sys
 import argparse
 
+try:
+    from tqdm import tqdm
+except ImportError:
+    def tqdm(iterable):
+        return iterable
+
 
 class CommandFilter:
     def __init__(self, in_stream):
@@ -78,10 +84,14 @@ itself.
 '''
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
-args = parser.parse_args(sys.argv)
+parser.add_argument(
+    '-o', '--output', help='output file', action='store',
+    type=argparse.FileType('w'), default=sys.stdout)
+args = parser.parse_args()
+out_file = args.output
 
-for game in GameReader(sys.stdin):
-    sys.stdout.write(game[0] + '\n')
+for game in tqdm(GameReader(sys.stdin)):
+    out_file.write(game[0] + '\n')
     # Filter unused commands
     game = [line
             for line in game
@@ -95,9 +105,9 @@ for game in GameReader(sys.stdin):
     else:
         raise RuntimeError('Second line in the game must be a board')
     if fen == Board.starting_fen:
-        sys.stdout.write('start\n')
+        out_file.write('start\n')
     else:
-        sys.stdout.write(f'board {fen}\n')
+        out_file.write(f'board {fen}\n')
     board = Board(fen)
     moves = []
     for line in game[2:]:
@@ -131,4 +141,4 @@ for game in GameReader(sys.stdin):
         else:
             # Unknown command, ignore it
             pass
-    sys.stdout.write('moves ' + ' '.join(moves) + '\n\n')
+    out_file.write('moves ' + ' '.join(moves) + '\n\n')
