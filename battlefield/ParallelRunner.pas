@@ -36,13 +36,19 @@ type
 
     function GetDraws: integer;
     function GetFirstWins: integer;
+    function GetJobs: integer;
     function GetSecondWins: integer;
   public
     constructor Create(Games: integer;
       const FirstEngineExe, SecondEngineExe: string; const Options: REngineOptions;
       Jobs: integer = 0; Book: TAbstractOpeningBook = nil);
+    procedure Start;
 
+    // Must not be modified after start. Also, it's not owned by this class, so
+    // call the destructor manually
     property Progress: TAbstractProgress read FProgress write FProgress;
+
+    property Jobs: integer read GetJobs;
 
     procedure Join;
 
@@ -143,6 +149,11 @@ begin
   Result := FGameResults[ewFirst];
 end;
 
+function TParallelRunner.GetJobs: integer;
+begin
+  Result := Length(FThreads);
+end;
+
 function TParallelRunner.GetSecondWins: integer;
 begin
   Result := FGameResults[ewSecond];
@@ -178,6 +189,11 @@ begin
   end;
   for I := 0 to Jobs - 1 do
     FRunners[I] := TEngineRunner.Create(FFirstFactory, FSecondFactory, FBook.Clone);
+  FreeAndNil(FBook);
+end;
+
+procedure TParallelRunner.Start;
+begin
   for I := 0 to Jobs - 1 do
   begin
     if not Assigned(FRunners[I]) then
@@ -187,7 +203,6 @@ begin
     DataPtr^.Index := I;
     FThreads[I] := BeginThread(@StaticThreadFunc, DataPtr);
   end;
-  FreeAndNil(FBook);
 end;
 
 procedure TParallelRunner.Join;

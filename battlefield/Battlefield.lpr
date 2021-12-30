@@ -391,6 +391,7 @@ begin
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
       Options, Jobs, Book);
     Runner.Progress := RunnerProgress;
+    Runner.Start;
     Runner.Join;
     if PgnFile <> '' then
     begin
