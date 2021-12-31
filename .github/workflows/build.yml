@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        lazarus: [stable, 2.0.10, 2.0.8, 1.8.4]
+        lazarus: [stable, 2.0.12, 2.0.10, 2.0.8, 1.8.4]
         exclude:
           # They say that Lazarus < 2.0.8 is not supported in setup-lazarus action for macOS
           - os: macos-latest
