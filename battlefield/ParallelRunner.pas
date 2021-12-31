@@ -145,6 +145,7 @@ begin
   WriteLn(StdErr, Format('%d/%d games completed (%s/%s), score = %s',
     [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
     ScorePairToStr(Runner.FirstWins, Runner.Draws, Runner.SecondWins)]));
+  Flush(StdErr);
 end;
 
 { TParallelRunner }
