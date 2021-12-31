@@ -15,21 +15,44 @@
 # along with SoFCheck.  If not, see <https://www.gnu.org/licenses/>.
 
 # This script simulates BattleField's TParallelRunner. It assumes that the time
-# of engine match is a normal random variable with mu = 1.0 and sigma = 0.2.
-# Then, it just simulates running `things` matches in `jobs` threads to compute
-# the expected time.
+# of engine match is a normal random variable with mu = 1.0. Then, it just
+# simulates running `things` matches in `jobs` threads to compute the expected
+# time.
 #
 # This script is needed to tune the time estimation function for BattleField.
 # One might try various functions and see how good they are, based on the
 # simulation results.
+#
+# It is recommended to run this script under PyPy, so it will work faster.
 import heapq
 import random
+import argparse
 
-print('jobs, things = ', end='')
-jobs, things = map(int, input().split())
+parser = argparse.ArgumentParser(
+    description='BattleField\'s TParallelRunner simulator')
+parser.add_argument('-j', '--jobs', help='number of jobs', action='store',
+                    type=int, required=True)
+parser.add_argument('-t', '--things', help='number of matches', action='store',
+                    type=int, required=True)
+parser.add_argument('-s', '--sims',
+                    help='number of simulations (default: 100\'000)',
+                    action='store', type=int, default=100_000)
+parser.add_argument('-g', '--sigma',
+                    help='sigma of normal distribution (default: 0.25)',
+                    action='store', type=float, default=0.25)
+args = parser.parse_args()
+
+jobs = args.jobs
+things = args.things
+iters = args.sims
+sigma = args.sigma
+
+assert jobs > 0, 'jobs must be positive'
+assert things > 0, 'things must be positive'
+assert iters > 0, 'iters must be positive'
+assert sigma > 0.0, 'sigma must be positive'
 
 sum_time = 0.0
-iters = 100_000
 
 for i in range(iters):
     heap = []
@@ -37,9 +60,7 @@ for i in range(iters):
     for _ in range(things):
         if len(heap) == jobs:
             time = heapq.heappop(heap)
-        # Uncomment the following file to simulate with univariate distribution
-        # heapq.heappush(heap, time + 2.0 * random.random())
-        heapq.heappush(heap, time + max(0.0, random.gauss(1.0, 0.2)))
+        heapq.heappush(heap, time + max(0.0, random.gauss(1.0, sigma)))
     time = max(heap + [time])
     sum_time += time
 
