@@ -39,9 +39,9 @@ resourcestring
     'Probably it''s not a UCI chess engine.';
 
 const
-  MaxWaitTime = 1000;
-  EngineInitTime = 1000;
-  EngineQuitTime = 1000;
+  MaxWaitTime = 2000;
+  EngineInitTime = 5000;
+  EngineQuitTime = 5000;
 
 type
   EChessEngine = class(Exception);
