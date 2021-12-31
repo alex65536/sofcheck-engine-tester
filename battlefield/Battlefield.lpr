@@ -384,12 +384,12 @@ begin
     ShowError('SCORE must be non-negative');
 
   try
-    if not Quiet then
-      RunnerProgress := TParallelRunnerProgress.Create(Games);
     if FenFile <> '' then
       Book := TFenListOpeningBook.Create(FenFile);
     Runner := TParallelRunner.Create(Games, FirstEngine, SecondEngine,
       Options, Jobs, Book);
+    if not Quiet then
+      RunnerProgress := TParallelRunnerProgress.Create(Games, Runner.Jobs);
     Runner.Progress := RunnerProgress;
     Runner.Start;
     Runner.Join;

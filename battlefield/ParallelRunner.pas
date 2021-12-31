@@ -90,19 +90,28 @@ type
 
   TParallelRunnerProgress = class(TAbstractProgress)
   public
-    constructor Create(Total: integer);
+    constructor Create(Total: integer; Jobs: integer);
 
     procedure Step(Sender: TObject); override;
   private
     FStartTime: int64;
     FTotal: integer;
     FCount: integer;
+    FJobs: integer;
   end;
 
 implementation
 
 uses
-  UTF8Process;
+  UTF8Process, Math;
+
+function EstimateTime(Things, Jobs: integer): double; inline;
+var
+  Coeff: double;
+begin
+  Coeff := (1.0 - 2.0 / (Jobs + 1)) * Max(0.5, 1.0 - Things / (2.0 * Jobs));
+  Result := Coeff * Things / Jobs;
+end;
 
 function StaticThreadFunc(DataPtr: Pointer): PtrInt;
 var
@@ -116,9 +125,10 @@ end;
 
 { TParallelRunnerProgress }
 
-constructor TParallelRunnerProgress.Create(Total: integer);
+constructor TParallelRunnerProgress.Create(Total: integer; Jobs: integer);
 begin
   FTotal := Total;
+  FJobs := Jobs;
   FStartTime := GetTickCount64;
 end;
 
@@ -130,7 +140,7 @@ var
 begin
   Inc(FCount);
   Time := (GetTickCount64 - FStartTime) / 1000;
-  PredictedTime := Time / FCount * FTotal;
+  PredictedTime := Time / EstimateTime(FCount, FJobs) * EstimateTime(FTotal, FJobs);
   Runner := Sender as TParallelRunner;
   WriteLn(StdErr, Format('%d/%d games completed (%s/%s), score = %s',
     [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
@@ -322,4 +332,3 @@ begin
 end;
 
 end.
-
