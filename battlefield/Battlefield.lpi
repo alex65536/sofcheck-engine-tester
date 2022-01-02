@@ -17,8 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="9"/>
-      <RevisionNr Value="12"/>
-      <StringTable Comments="BattleField is a tool to run micro-matches between chess engines" FileDescription="BattleField" LegalCopyright="Copyright (C) 2020-2021 Alexander Kernozhitsky" ProductName="BattleField" ProductVersion="0.9.12 beta"/>
+      <RevisionNr Value="13"/>
+      <StringTable Comments="BattleField is a tool to run micro-matches between chess engines" FileDescription="BattleField" LegalCopyright="Copyright (C) 2020-2022 Alexander Kernozhitsky" ProductName="BattleField" ProductVersion="0.9.13 beta"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>

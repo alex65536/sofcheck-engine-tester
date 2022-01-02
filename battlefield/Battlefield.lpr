@@ -38,7 +38,7 @@ uses {$IFDEF UNIX}
   ChessTime;
 
 const
-  AppVersionCodename = 'Profit from Our Victory';
+  AppVersionCodename = 'No Sorrow, No Pain';
 
   procedure ShowHelp(Banner: boolean = True);
   begin
@@ -248,7 +248,7 @@ begin
     if ParamStr(Param) = '-v' then
     begin
       WriteLn('BattleField version ' + GetAppVersion + ' "' + AppVersionCodename + '"');
-      WriteLn('Copyright (C) 2020-2021 Alexander Kernozhitsky');
+      WriteLn('Copyright (C) 2020-2022 Alexander Kernozhitsky');
       WriteLn;
       WriteLn('Build time: ' + GetAppBuildTime);
       WriteLn('Target: ' + GetAppTarget);
