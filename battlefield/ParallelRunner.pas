@@ -160,9 +160,11 @@ begin
   Time := (GetTickCount64 - FStartTime) / 1000;
   PredictedTime := Time / EstimateTime(FCount, FJobs) * EstimateTime(FTotal, FJobs);
   Runner := Sender as TParallelRunner;
-  WriteLn(StdErr, Format('%d/%d games completed (%s/%s), score = %s',
+  Write(StdErr, Format('%d/%d games (%s/%s), score = %s, confidence = ',
     [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
     Runner.BattleResult.ToString]));
+  PrintConfidenceShort(CalcConfidence(Runner.BattleResult), StdErr);
+  WriteLn(StdErr);
   Flush(StdErr);
 end;
 

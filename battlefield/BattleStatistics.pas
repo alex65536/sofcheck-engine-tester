@@ -58,6 +58,7 @@ procedure PrintEloDifference(Value: double; var AFile: TextFile);
 
 function CalcConfidence(const R: TBattleResult): TConfidenceResult;
 procedure PrintConfidence(const C: TConfidenceResult; var AFile: TextFile);
+procedure PrintConfidenceShort(const C: TConfidenceResult; var AFile: TextFile);
 
 implementation
 
@@ -196,7 +197,7 @@ begin
       continue;
     Write(AFile, '  p = ', ProbValues[Level]: 0: 2, ': ');
     rtcSetBold(AFile, True);
-    if Integer(C.Level) < Integer(Level) then
+    if integer(C.Level) < integer(Level) then
       WriteLn(AFile, 'Unclear')
     else if C.Side = csFirst then
     begin
@@ -210,6 +211,28 @@ begin
     end;
     rtcResetStyle(AFile);
   end;
+end;
+
+procedure PrintConfidenceShort(const C: TConfidenceResult; var AFile: TextFile);
+type
+  TLevelType = (ltSmall, ltLarge);
+const
+  SideColors: array [TLevelType, TConfidenceSide] of TConsoleColor =
+    ((cclBlue, cclYellow, cclPurple),
+    (cclGreen, cclYellow, cclRed));
+  FirstTitles: array [TConfidenceLevel] of string = ('', '+90', '+95', '+97', '+99');
+  SecondTitles: array [TConfidenceLevel] of string = ('', '-90', '-95', '-97', '-99');
+  LevelTypes: array [TConfidenceLevel] of TLevelType =
+    (ltSmall, ltSmall, ltLarge, ltLarge, ltLarge);
+begin
+  rtcSetBold(AFile, integer(C.Level) > integer(cl95));
+  rtcSetFgColor(AFile, SideColors[LevelTypes[C.Level], C.Side]);
+  case C.Side of
+    csFirst: Write(AFile, FirstTitles[C.Level]);
+    csUnclear: Write(AFile, '?');
+    csSecond: Write(AFile, SecondTitles[C.Level]);
+  end;
+  rtcResetStyle(AFile);
 end;
 
 { TBattleResult }
@@ -230,4 +253,3 @@ begin
 end;
 
 end.
-
