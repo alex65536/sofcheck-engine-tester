@@ -24,7 +24,7 @@ unit ParallelRunner;
 interface
 
 uses
-  Classes, SysUtils, EngineRunner, Progress, Utils, ScoreUtils, OpeningBook;
+  Classes, SysUtils, EngineRunner, Progress, Utils, OpeningBook, BattleStatistics;
 
 type
 
@@ -34,6 +34,7 @@ type
   private
     FProgress: TAbstractProgress;
 
+    function GetBattleResult: TBattleResult;
     function GetDraws: integer;
     function GetFirstWins: integer;
     function GetJobs: integer;
@@ -56,6 +57,7 @@ type
     property FirstWins: integer read GetFirstWins;
     property SecondWins: integer read GetSecondWins;
     property Draws: integer read GetDraws;
+    property BattleResult: TBattleResult read GetBattleResult;
 
     // Run this only after the threads joined
     procedure SaveGamesAsPGN(Stream: TStream);
@@ -160,7 +162,7 @@ begin
   Runner := Sender as TParallelRunner;
   WriteLn(StdErr, Format('%d/%d games completed (%s/%s), score = %s',
     [FCount, FTotal, HumanTimeString(Time), HumanTimeString(PredictedTime),
-    ScorePairToStr(Runner.FirstWins, Runner.Draws, Runner.SecondWins)]));
+    Runner.BattleResult.ToString]));
   Flush(StdErr);
 end;
 
@@ -169,6 +171,12 @@ end;
 function TParallelRunner.GetDraws: integer;
 begin
   Result := FGameResults[ewDraw];
+end;
+
+function TParallelRunner.GetBattleResult: TBattleResult;
+begin
+  Result := MakeBattleResult(FGameResults[ewFirst], FGameResults[ewDraw],
+    FGameResults[ewSecond]);
 end;
 
 function TParallelRunner.GetFirstWins: integer;

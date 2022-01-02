@@ -2,7 +2,7 @@
   This file is part of Battlefield - a tool to run micro-matches between chess
   engines.
 
-  Copyright © 2020-2021 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2020-2022 Alexander Kernozhitsky <sh200105@mail.ru>
 
   Battlefield is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,13 +29,11 @@ uses {$IFDEF UNIX}
   EngineRunner,
   ParallelRunner,
   Progress,
-  ScoreUtils,
   RichTextConsole,
   OpeningBook,
   VersionInfo,
-  spe,
-  Math,
-  ChessTime;
+  ChessTime,
+  BattleStatistics;
 
 const
   AppVersionCodename = 'No Sorrow, No Pain';
@@ -103,90 +101,6 @@ const
     WriteLn(StdErr, '---');
     ShowHelp(False);
     halt(1);
-  end;
-
-const
-  P0_9 = 1.64485362695147;
-  P0_95 = 1.95996398454005;
-  P0_97 = 2.17009037758456;
-  P0_99 = 2.57582930354890;
-
-  procedure ProbabilityCheck(P, Len: double; Win, Draw, Count: integer);
-  var
-    Window, Left, Right, Prob: double;
-  begin
-    Prob := (2 * Win + Draw) / (2 * Count);
-    Window := Len * (Sqrt(Prob * (1 - Prob)) / Sqrt(Count));
-    Left := Prob - Window;
-    Right := Prob + Window;
-    Write('  p = ', P: 0: 2, ': ');
-    rtcSetBold;
-    if Left >= 0.5 then
-    begin
-      rtcSetFgColor(cclGreen);
-      WriteLn('First wins');
-    end
-    else if Right <= 0.5 then
-    begin
-      rtcSetFgColor(cclRed);
-      WriteLn('Second wins');
-    end
-    else
-      WriteLn('Unclear');
-    rtcResetStyle;
-  end;
-
-  procedure PrintLOS(Win, Lose: integer);
-  var
-    Value: double;
-  begin
-    Write('LOS = ');
-    rtcSetBold;
-    if Win + Lose = 0 then
-    begin
-      rtcSetFgColor(cclWhite);
-      Write('N/A');
-    end
-    else
-    begin
-      Value := 0.5 * (1.0 + speerf((Win - Lose) / Sqrt(2 * (Win + Lose))));
-      if Value < 0.1 then
-        rtcSetFgColor(cclRed)
-      else if Value <= 0.9 then
-        rtcSetFgColor(cclYellow)
-      else
-        rtcSetFgColor(cclGreen);
-      Write(Value: 0: 2);
-    end;
-    rtcResetStyle;
-    WriteLn;
-  end;
-
-  procedure PrintEloDifference(Win, Draw, Lose: integer);
-  var
-    WinRate: double;
-    EloDif: double;
-  begin
-    Write('Elo difference = ');
-    if (Draw = 0) and (Lose = 0) then
-    begin
-      rtcSetBold;
-      rtcSetFgColor(cclYellow);
-      WriteLn('oo');
-      rtcResetStyle;
-      Exit;
-    end;
-    if (Win = 0) and (Draw = 0) then
-    begin
-      rtcSetBold;
-      rtcSetFgColor(cclYellow);
-      WriteLn('-oo');
-      rtcResetStyle;
-      Exit;
-    end;
-    WinRate := (Win + 0.5 * Draw) / (Win + Draw + Lose);
-    EloDif := -Log10(1.0 / WinRate - 1.0) * 400.0;
-    WriteLn(EloDif: 0: 2);
   end;
 
   function IsTimeControlValid(const S: string): boolean;
@@ -412,20 +326,13 @@ begin
     end;
     WriteLn('Wins: ', Runner.FirstWins, ', Loses: ', Runner.SecondWins,
       ', Draws: ', Runner.Draws);
-    WriteLn('Score: ', ScorePairToStr(Runner.FirstWins, Runner.Draws,
-      Runner.SecondWins));
-    rtcSetBold;
-    WriteLn('Confidence interval:');
-    rtcResetStyle;
-    ProbabilityCheck(0.9, P0_9, Runner.FirstWins, Runner.Draws, Games);
-    ProbabilityCheck(0.95, P0_95, Runner.FirstWins, Runner.Draws, Games);
-    ProbabilityCheck(0.97, P0_97, Runner.FirstWins, Runner.Draws, Games);
-    ProbabilityCheck(0.99, P0_99, Runner.FirstWins, Runner.Draws, Games);
+    WriteLn('Score: ', Runner.BattleResult.ToString);
+    PrintConfidence(CalcConfidence(Runner.BattleResult), StdOut);
     rtcSetBold;
     WriteLn('Other stats:');
     rtcResetStyle;
-    PrintLOS(Runner.FirstWins, Runner.SecondWins);
-    PrintEloDifference(Runner.FirstWins, Runner.Draws, Runner.SecondWins);
+    PrintLOS(CalcLOS(Runner.BattleResult), StdOut);
+    PrintEloDifference(CalcEloDifference(Runner.BattleResult), StdOut);
   finally
     FreeAndNil(Runner);
     FreeAndNil(RunnerProgress);

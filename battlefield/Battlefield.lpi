@@ -77,15 +77,15 @@
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="ScoreUtils.pas"/>
+        <Filename Value="../common/VersionInfo.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="../common/VersionInfo.pas"/>
+        <Filename Value="GameNotation.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="GameNotation.pas"/>
+        <Filename Value="BattleStatistics.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
     </Units>
