@@ -116,7 +116,7 @@ end;
 procedure PrintLOS(Value: double; var AFile: TextFile);
 begin
   Write(AFile, 'LOS = ');
-  rtcSetBold(AFile, True);
+  rtcSetBold(AFile);
   if IsNan(Value) then
   begin
     rtcSetFgColor(AFile, cclWhite);
@@ -157,7 +157,7 @@ procedure PrintEloDifference(Value: double; var AFile: TextFile);
 begin
   if IsInfinite(Value) then
   begin
-    rtcSetBold(AFile, True);
+    rtcSetBold(AFile);
     rtcSetFgColor(AFile, cclYellow);
     if Value > 0 then
       Write(AFile, 'oo')
@@ -166,7 +166,7 @@ begin
     rtcResetStyle(AFile);
     Exit;
   end;
-  rtcSetBold(AFile, True);
+  rtcSetBold(AFile);
   Write(AFile, Value: 0: 2);
   rtcResetStyle(AFile);
 end;
@@ -220,7 +220,7 @@ procedure PrintConfidence(const C: TConfidenceResult; var AFile: TextFile);
 var
   Level: TConfidenceLevel;
 begin
-  rtcSetBold(AFile, True);
+  rtcSetBold(AFile);
   WriteLn(AFile, 'Confidence interval:');
   rtcResetStyle(AFile);
   for Level := Low(TConfidenceLevel) to High(TConfidenceLevel) do
@@ -228,7 +228,7 @@ begin
     if Level = clNone then
       continue;
     Write(AFile, '  p = ', ProbValues[Level]: 0: 2, ': ');
-    rtcSetBold(AFile, True);
+    rtcSetBold(AFile);
     if integer(C.Level) < integer(Level) then
       WriteLn(AFile, 'Unclear')
     else if C.Side = csFirst then

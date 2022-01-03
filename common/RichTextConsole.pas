@@ -37,13 +37,13 @@ procedure rtcSetFgColor(AColor: TConsoleColor); inline;
 procedure rtcSetBgColor(var AFile: TextFile; AColor: TConsoleColor); inline;
 procedure rtcSetBgColor(AColor: TConsoleColor); inline;
 
-procedure rtcSetBold(var AFile: TextFile; ABold: boolean); inline;
+procedure rtcSetBold(var AFile: TextFile; ABold: boolean = True); inline;
 procedure rtcSetBold(ABold: boolean = True); inline;
 
-procedure rtcSetItalic(var AFile: TextFile; AItalic: boolean); inline;
+procedure rtcSetItalic(var AFile: TextFile; AItalic: boolean = True); inline;
 procedure rtcSetItalic(AItalic: boolean = True); inline;
 
-procedure rtcSetUnderline(var AFile: TextFile; AUnderline: boolean); inline;
+procedure rtcSetUnderline(var AFile: TextFile; AUnderline: boolean = True); inline;
 procedure rtcSetUnderline(AUnderline: boolean = True); inline;
 
 procedure rtcResetStyle(var AFile: TextFile); inline;
