@@ -34,6 +34,7 @@ type
     Win, Draw, Lose: integer;
 
     function WinRate: double;
+    function WinRateVariance: double;
     function Total: double;
     function ToString: string;
   end;
@@ -48,13 +49,21 @@ type
     Side: TConfidenceSide;
   end;
 
+  { TEloDifference }
+
+  TEloDifference = record
+    Low, Average, High: double;
+  end;
+
 function MakeBattleResult(AWin, ADraw, ALose: integer): TBattleResult;
 
 function CalcLOS(const R: TBattleResult): double;
 procedure PrintLOS(Value: double; var AFile: TextFile);
 
-function CalcEloDifference(const R: TBattleResult): double;
+function CalcEloDifference(const R: TBattleResult): TEloDifference;
+function CalcEloDifference(WinRate: double): double;
 procedure PrintEloDifference(Value: double; var AFile: TextFile);
+procedure PrintEloDifference(const Value: TEloDifference; var AFile: TextFile);
 
 function CalcConfidence(const R: TBattleResult): TConfidenceResult;
 procedure PrintConfidence(const C: TConfidenceResult; var AFile: TextFile);
@@ -122,44 +131,67 @@ begin
   WriteLn(AFile);
 end;
 
-function CalcEloDifference(const R: TBattleResult): double;
+function CalcEloDifference(const R: TBattleResult): TEloDifference;
+var
+  Mu, Delta: double;
 begin
-  if (R.Draw = 0) and (R.Lose = 0) then
+  Mu := R.WinRate;
+  Delta := R.WinRateVariance * ProbThresholds[cl95];
+  Result.Low := CalcEloDifference(Mu - Delta);
+  Result.Average := CalcEloDifference(Mu);
+  Result.High := CalcEloDifference(Mu + Delta);
+end;
+
+function CalcEloDifference(WinRate: double): double;
+const
+  Eps: double = 1e-12;
+begin
+  if WinRate >= 1.0 - Eps then
     exit(Infinity);
-  if (R.Win = 0) and (R.Draw = 0) then
+  if WinRate <= Eps then
     exit(-Infinity);
-  Result := -Log10(1.0 / R.WinRate - 1.0) * 400.0;
+  Result := -Log10(1.0 / WinRate - 1.0) * 400.0;
 end;
 
 procedure PrintEloDifference(Value: double; var AFile: TextFile);
 begin
-  Write(AFile, 'Elo difference = ');
   if IsInfinite(Value) then
   begin
     rtcSetBold(AFile, True);
     rtcSetFgColor(AFile, cclYellow);
     if Value > 0 then
-      WriteLn(AFile, 'oo')
+      Write(AFile, 'oo')
     else
-      WriteLn(AFile, '-oo');
+      Write(AFile, '-oo');
     rtcResetStyle(AFile);
     Exit;
   end;
-  WriteLn(AFile, Value: 0: 2);
+  rtcSetBold(AFile, True);
+  Write(AFile, Value: 0: 2);
+  rtcResetStyle(AFile);
+end;
+
+procedure PrintEloDifference(const Value: TEloDifference; var AFile: TextFile);
+begin
+  Write(AFile, 'Elo difference = ');
+  PrintEloDifference(Value.Low, AFile);
+  Write(AFile, '/');
+  PrintEloDifference(Value.Average, AFile);
+  Write(AFile, '/');
+  PrintEloDifference(Value.High, AFile);
+  WriteLn(AFile, ' (low/avg/high, at p = 0.95)');
 end;
 
 function CalcConfidence(const R: TBattleResult): TConfidenceResult;
 var
   Level: TConfidenceLevel;
-  Prob: double;
-  Sigma: double;
-  Len: double;
+  Mu, Sigma, Len: double;
 begin
   Result.Level := clNone;
   Result.Side := csUnclear;
 
-  Prob := R.WinRate;
-  Sigma := Sqrt(Prob * (1 - Prob)) / Sqrt(R.Total);
+  Mu := R.WinRate;
+  Sigma := R.WinRateVariance;
 
   for Level := High(TConfidenceLevel) downto Low(TConfidenceLevel) do
   begin
@@ -168,14 +200,14 @@ begin
 
     Len := ProbThresholds[Level];
 
-    if Prob - Len * Sigma >= 0.5 then
+    if Mu - Len * Sigma >= 0.5 then
     begin
       Result.Level := Level;
       Result.Side := csFirst;
       exit;
     end;
 
-    if Prob + Len * Sigma <= 0.5 then
+    if Mu + Len * Sigma <= 0.5 then
     begin
       Result.Level := Level;
       Result.Side := csSecond;
@@ -240,6 +272,14 @@ end;
 function TBattleResult.WinRate: double;
 begin
   Result := (Win + 0.5 * Draw) / (Win + Draw + Lose);
+end;
+
+function TBattleResult.WinRateVariance: double;
+var
+  Mu: double;
+begin
+  Mu := WinRate;
+  Result := Sqrt(Mu * (1 - Mu)) / Sqrt(Total);
 end;
 
 function TBattleResult.Total: double;
