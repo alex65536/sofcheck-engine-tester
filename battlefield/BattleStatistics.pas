@@ -34,7 +34,7 @@ type
     Win, Draw, Lose: integer;
 
     function WinRate: double;
-    function WinRateVariance: double;
+    function WinRateStdDev: double;
     function Total: double;
     function ToString: string;
   end;
@@ -136,7 +136,7 @@ var
   Mu, Delta: double;
 begin
   Mu := R.WinRate;
-  Delta := R.WinRateVariance * ProbThresholds[cl95];
+  Delta := R.WinRateStdDev * ProbThresholds[cl95];
   Result.Low := CalcEloDifference(Mu - Delta);
   Result.Average := CalcEloDifference(Mu);
   Result.High := CalcEloDifference(Mu + Delta);
@@ -191,7 +191,7 @@ begin
   Result.Side := csUnclear;
 
   Mu := R.WinRate;
-  Sigma := R.WinRateVariance;
+  Sigma := R.WinRateStdDev;
 
   for Level := High(TConfidenceLevel) downto Low(TConfidenceLevel) do
   begin
@@ -274,7 +274,7 @@ begin
   Result := (Win + 0.5 * Draw) / (Win + Draw + Lose);
 end;
 
-function TBattleResult.WinRateVariance: double;
+function TBattleResult.WinRateStdDev: double;
 var
   Mu: double;
 begin
