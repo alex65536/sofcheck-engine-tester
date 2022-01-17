@@ -1,5 +1,5 @@
 {
-  Copyright © 2020 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2020, 2022 Alexander Kernozhitsky <sh200105@mail.ru>
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,9 +21,10 @@ uses
   ChessRules,
   Classes,
   SysUtils,
-  PGNSplitter;
+  PGNSplitter,
+  Utils;
 
-  procedure RandomGame;
+  procedure RandomGame(var State: RXoshiro256State);
   var
     Board: TChessBoard;
     Chain: TMoveChain;
@@ -36,7 +37,7 @@ uses
       try
         while Board.GetGameResult.Kind = geNone do
         begin
-          I := Random(Board.MoveCount);
+          I := integer(Xoshiro256ss(State) mod QWord(Board.MoveCount));
           Move := Board.Moves[I];
           Chain.Add(Move);
           Board.MakeMove(Move);
@@ -92,8 +93,17 @@ uses
 
 var
   I: integer;
+  State: RXoshiro256State;
 begin
-  RandSeed := 42;
+  // We need a fixed seed to generate the data. So, fill the initial state with
+  // the digits of pi and shuffle everything 100 times.
+  State.S[0] := QWord(314159265358979323);
+  State.S[1] := QWord(846264338327950288);
+  State.S[2] := QWord(419716939937510582);
+  State.S[3] := QWord(097494459230781640);
+  for I := 1 to 100 do
+    Xoshiro256ss(State);
+
   WriteLn('# This file is generated automatically, DO NOT EDIT!');
   WriteLn('#');
   WriteLn('# This file contains the positions on which the self-tests will be run. It was generated using');
@@ -111,6 +121,6 @@ begin
   AddPGNData;
   WriteLn;
   WriteLn('# These positions are added from random games');
-  for I := 1 to 100 do
-    RandomGame;
+  for I := 1 to 128 do
+    RandomGame(State);
 end.
