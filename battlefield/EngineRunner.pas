@@ -277,11 +277,11 @@ begin
     CurGame.PadZeroScores;
     UciConverter := TUCIMoveConverter.Create;
     Timer := TChessTimer.Create;
-    SetupTimer;
     FFirstEngine.MoveChain.Assign(CurGame.Chain);
     FSecondEngine.MoveChain.Assign(CurGame.Chain);
     FFirstEngine.NewGame;
     FSecondEngine.NewGame;
+    SetupTimer;
     if SwitchSides then
     begin
       Engines[pcWhite] := FSecondEngine;
