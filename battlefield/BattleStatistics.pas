@@ -277,9 +277,13 @@ end;
 function TBattleResult.WinRateStdDev: double;
 var
   Mu: double;
+  D: double;
 begin
   Mu := WinRate;
-  Result := Sqrt(Mu * (1 - Mu)) / Sqrt(Total);
+  D := Mu * (1.0 - Mu) - Draw / (4.0 * Total);
+  if D <= 0.0 then
+    D := 0.0;
+  Result := Sqrt(D) / Sqrt(Total);
 end;
 
 function TBattleResult.Total: double;
