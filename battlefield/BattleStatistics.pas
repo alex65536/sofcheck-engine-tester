@@ -279,7 +279,7 @@ var
   Mu: double;
   D: double;
 begin
-  if Total = 1 then
+  if Total <= 5 then
     exit(1.0);
   Mu := WinRate;
   D := Mu * (1.0 - Mu) - Draw / (4.0 * Total);
