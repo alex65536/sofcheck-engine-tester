@@ -280,7 +280,9 @@ begin
     FFirstEngine.MoveChain.Assign(CurGame.Chain);
     FSecondEngine.MoveChain.Assign(CurGame.Chain);
     FFirstEngine.NewGame;
+    FFirstEngine.WaitForEngine;
     FSecondEngine.NewGame;
+    FSecondEngine.WaitForEngine;
     SetupTimer;
     if SwitchSides then
     begin
