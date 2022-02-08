@@ -2,7 +2,7 @@
   This file is part of Battlefield - a tool to run micro-matches between chess
   engines.
 
-  Copyright © 2020-2021 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2020-2022 Alexander Kernozhitsky <sh200105@mail.ru>
 
   Battlefield is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

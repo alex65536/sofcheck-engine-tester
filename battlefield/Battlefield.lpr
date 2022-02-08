@@ -36,7 +36,7 @@ uses {$IFDEF UNIX}
   BattleStatistics;
 
 const
-  AppVersionCodename = 'No Sorrow, No Pain';
+  AppVersionCodename = 'Talk of Freedom';
 
   procedure ShowHelp(Banner: boolean = True);
   begin
