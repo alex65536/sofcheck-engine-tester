@@ -1,7 +1,7 @@
 {
   This file is part of Chess 256.
 
-  Copyright © 2016, 2018, 2019, 2021 Alexander Kernozhitsky <sh200105@mail.ru>
+  Copyright © 2016, 2018, 2019, 2021, 2022 Alexander Kernozhitsky <sh200105@mail.ru>
 
   Chess 256 is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@ type
     property TerminateOnDestroy: boolean read FTerminateOnDestroy
       write FTerminateOnDestroy;
     property Process: TProcessUTF8 read FProcess;
+    property Terminated: boolean read FTerminated;
     // Events
     property OnTerminate: TNotifyEvent read FOnTerminate write FOnTerminate;
     property OnReadLine: TReadCommandEvent read FOnReadLine write FOnReadLine;
@@ -219,6 +220,10 @@ begin
   if FTerminated then
     Exit;
   FTerminated := True;
+  {$IFDEF USELOG}
+  WriteLn(LogFile, FProcess.Executable + ' -> Terminate ' + IntToStr(FProcess.ExitStatus));
+  Flush(LogFile);
+  {$ENDIF}
   if Assigned(FOnTerminate) then
     FOnTerminate(Self);
 end;
@@ -243,7 +248,7 @@ begin
   Flush(LogFile);
   {$ENDIF}
   S += LineEnding;
-  FProcess.Input.Write(S[1], Length(S));
+  FProcess.Input.WriteBuffer(S[1], Length(S));
 end;
 
 procedure TConsoleProcess.TryRead;
