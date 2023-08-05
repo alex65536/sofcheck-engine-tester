@@ -7,19 +7,31 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        lazarus: [stable, 2.0.12, 2.0.10, 2.0.8, 1.8.4]
-        exclude:
-          # They say that Lazarus < 2.0.8 is not supported in setup-lazarus action for macOS
-          - os: macos-latest
-            lazarus: 1.8.4
+        # Use only the versions based on FPC >= 3.2.0 here. Older versions are added below.
+        lazarus: [stable, 2.2.6, 2.2.4, 2.0.12]
+        include:
+          # For macOS 11, I could only make Lazarus 2.2.6 work, older versions cannot be
+          # installed for some weird reason.
+
+          # For GNU/Linux, some older versions are supported only under Ubuntu 20.04
+          # See https://github.com/gcarreno/setup-lazarus/issues/25
+          - os: ubuntu-20.04
+            lazarus: 2.0.8
+
           # For Windows, FPC 3.2.0 is minimum supported version because of the following bugs
           # with wrong type declarations in MMSystem unit:
           # - https://bugs.freepascal.org/view.php?id=33823
           # - https://bugs.freepascal.org/view.php?id=35469
-          - os: windows-latest
+        exclude:
+          # Lazarus < 2.2.6 is not supported in setup-lazarus action for macOS 12
+          - os: macos-latest
             lazarus: 1.8.4
-          - os: windows-latest
+          - os: macos-latest
             lazarus: 2.0.8
+          - os: macos-latest
+            lazarus: 2.0.12
+          - os: macos-latest
+            lazarus: 2.2.4
 
     runs-on: ${{ matrix.os }}
 
@@ -27,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Lazarus
-        uses: gcarreno/setup-lazarus@v3.0.2
+        uses: gcarreno/setup-lazarus@v3.2.15
         with:
           lazarus-version: ${{ matrix.lazarus }}
 

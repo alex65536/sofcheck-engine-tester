@@ -20,9 +20,9 @@ code of Chess 256 and slightly modified.
 
 On Debian/Ubuntu, you need to install the following packages:
 
-- `fpc (>= 3.0.0)`
-- `lcl-units (>= 2.0)`
-- `lcl-utils (>= 2.0)`
+- `fpc (>= 3.0.4)`
+- `lcl-units (>= 2.0.0)`
+- `lcl-utils (>= 2.0.0)`
 - `python3 (>= 3.7)`
 
 ## Utilities
