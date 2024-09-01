@@ -7,7 +7,7 @@
 
 These utilities include:
 
-- [Battlefield](#battlefield)
+- [Battlefield](#battlefield) (deprecated, development continues [3][here])
 - [Data generator for selftests](#data-generator-for-selftests)
 - [Test position set for BattleField](#test-position-set-for-battlefield)
 - [SoFGameSet utilities](#sofgameset-utilities)
@@ -29,20 +29,13 @@ On Debian/Ubuntu, you need to install the following packages:
 
 ### Battlefield
 
-BattleField is a tool to run many micro engine matches. It allows two engines to play many games
-either on fixed time per move or on fixed depth.
-
-To build this utility, run
+**NOTE:** Pascal/Lazarus version of Battlefield is deprecated and will no longer receive updates.
+The utility has been rewritten in Go and is now located [3][here]. To get the latest version, you
+can use the following command:
 
 ~~~~~
-$ cd battlefield
-$ lazbuild Battlefield.lpi
+$ go install github.com/alex65536/day20/cmd/bfield@latest
 ~~~~~
-
-Alternatively, you can open and build the project `battlefield/Battlefield.lpi` in Lazarus IDE.
-
-The resulting binary is located in `battlefield/bin/battlefield`. Run the binary without arguments
-to get more information on how to use it.
 
 ### Data generator for selftests
 
@@ -75,3 +68,4 @@ GNU GPL v3 (or any later version)
 
 [1]: https://github.com/alex65536/sofcheck/tree/master/selftest
 [2]: https://github.com/alex65536/sofcheck/blob/master/docs/gameset.md
+[3]: https://github.com/alex65536/day20
