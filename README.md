@@ -7,7 +7,7 @@
 
 These utilities include:
 
-- [Battlefield](#battlefield) (deprecated, development continues [3][here])
+- [Battlefield](#battlefield) (deprecated, development continues [here][3])
 - [Data generator for selftests](#data-generator-for-selftests)
 - [Test position set for BattleField](#test-position-set-for-battlefield)
 - [SoFGameSet utilities](#sofgameset-utilities)
@@ -30,7 +30,7 @@ On Debian/Ubuntu, you need to install the following packages:
 ### Battlefield
 
 **NOTE:** Pascal/Lazarus version of Battlefield is deprecated and will no longer receive updates.
-The utility has been rewritten in Go and is now located [3][here]. To get the latest version, you
+The utility has been rewritten in Go and is now located [here][3]. To get the latest version, you
 can use the following command:
 
 ~~~~~
